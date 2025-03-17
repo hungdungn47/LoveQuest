@@ -4,10 +4,13 @@ import 'package:love_quest/features/auth/data/data_sources/remote/user_api_servi
 import 'package:love_quest/features/auth/data/repository/user_repository.dart';
 import 'package:love_quest/features/auth/domain/repository/user_repository.dart';
 import 'package:love_quest/features/auth/domain/usecases/login.dart';
+import 'package:love_quest/features/auth/presentation/controllers/auth_controller.dart';
 
 Future<void> initializeDependencies() async {
   Get.put<DioClient>(DioClient.instance);
   Get.put<UserApiService>(UserApiServiceImpl(Get.find<DioClient>()));
   Get.put<UserRepository>(UserRepositoryImpl(Get.find<UserApiService>()));
   Get.put<LoginUseCase>(LoginUseCase(Get.find<UserRepository>()));
+
+  Get.lazyPut(() => AuthController());
 }
