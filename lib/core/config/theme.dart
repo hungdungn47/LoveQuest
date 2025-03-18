@@ -4,10 +4,32 @@ class AppColors {
   static const Color primary = Color(0xFFA85485);
   static const Color secondary = Color(0xFFEC7FA9);
   static const Color background = Color(0xFFFFEDFA);
+  static const Color btnBg = Color(0xFFFFB8E0);
   static const Color text = Color(0xFF333333);
   static const Color lightText = Color(0xFF777777);
   static const Color white = Colors.white;
   static const Color black = Colors.black;
+}
+
+class Styles {
+  static const TextStyle smallTextW500 =
+      TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500);
+  static const TextStyle smallTextW700 =
+      TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w700);
+  static const TextStyle smallTextW800 =
+      TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w800);
+  static const TextStyle mediumTextW500 =
+      TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500);
+  static const TextStyle mediumTextW700 =
+      TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.w700);
+  static const TextStyle mediumTextW800 =
+      TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.w800);
+  static const TextStyle bigTextW500 =
+      TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.w500);
+  static const TextStyle bigTextW700 =
+      TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.w700);
+  static const TextStyle bigTextW800 =
+      TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.w800);
 }
 
 class AppTheme {
@@ -15,7 +37,6 @@ class AppTheme {
     return ThemeData(
       primaryColor: AppColors.primary,
       scaffoldBackgroundColor: AppColors.background,
-
       textTheme: TextTheme(
         displayLarge: TextStyle(
           fontFamily: 'Kaushan',

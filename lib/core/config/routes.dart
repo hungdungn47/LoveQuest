@@ -5,6 +5,8 @@ import 'package:love_quest/features/auth/presentation/pages/onboarding_screens/g
 import 'package:love_quest/features/auth/presentation/pages/onboarding_screens/interests_screen.dart';
 import 'package:love_quest/features/auth/presentation/pages/onboarding_screens/name_screen.dart';
 import 'package:love_quest/features/auth/presentation/pages/signup_screen.dart';
+import 'package:love_quest/features/home/presentation/home.binding.dart';
+import 'package:love_quest/features/home/presentation/home.page.dart';
 
 class AppRoutes {
   static const String signup = '/signup';
@@ -22,6 +24,10 @@ class AppRoutes {
     // GetPage(name: birthday, page: () => BirthdayScreen()),
     GetPage(name: gender, page: () => GenderScreen()),
     GetPage(name: interests, page: () => InterestsScreen()),
-    GetPage(name: home, page: () => HomeScreen()),
+    GetPage(
+        name: home,
+        page: () => HomePage(),
+        binding: HomeBinding(),
+    ),
   ];
 }

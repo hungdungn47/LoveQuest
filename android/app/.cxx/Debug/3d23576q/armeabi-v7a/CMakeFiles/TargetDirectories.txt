@@ -1,0 +1,2 @@
+C:/Users/laptop/Desktop/LoveQuest/LoveQuest/android/app/.cxx/Debug/3d23576q/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/laptop/Desktop/LoveQuest/LoveQuest/android/app/.cxx/Debug/3d23576q/armeabi-v7a/CMakeFiles/rebuild_cache.dir
