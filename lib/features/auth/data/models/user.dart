@@ -1,7 +1,7 @@
 import 'package:love_quest/features/auth/domain/entities/user.dart';
 
 class UserModel extends UserEntity {
-  const UserModel({
+  UserModel({
     String? id,
     String? fullName,
     String? nickName,

@@ -38,8 +38,7 @@ class AuthController extends GetxController {
 
       Get.toNamed(AppRoutes.name);
     } catch (e) {
-      Get.snackbar('Error', e.toString(),
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
     } finally {
       isLoading.value = false;
     }
@@ -63,10 +62,9 @@ class AuthController extends GetxController {
         email: emailController.text,
       );
 
-      Get.toNamed(AppRoutes.home);
+      Get.offAllNamed(AppRoutes.home);
     } catch (e) {
-      Get.snackbar('Error', e.toString(),
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
     } finally {
       isLoading.value = false;
     }
@@ -74,7 +72,7 @@ class AuthController extends GetxController {
 
   void setName(String name) {
     user.update((val) {
-      // val?.nickName = name;
+      val?.nickName = name;
     });
     Get.toNamed(AppRoutes.gender);
   }
@@ -89,7 +87,7 @@ class AuthController extends GetxController {
   void setGender(String gender) {
     selectedGender.value = gender;
     user.update((val) {
-      // val?.gender = gender;
+      val?.gender = gender;
     });
     Get.toNamed(AppRoutes.interests);
   }
@@ -108,7 +106,8 @@ class AuthController extends GetxController {
 
   void completeOnboarding() {
     // In a real app, you would save the user profile to backend
-    Get.toNamed(AppRoutes.home);
+    Get.offAllNamed(AppRoutes.home);
+    // Get.offNamed(AppRoutes.home);
   }
 
   @override

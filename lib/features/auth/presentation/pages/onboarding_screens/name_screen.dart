@@ -21,16 +21,10 @@ class NameScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      'Welcome to',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    Text(
                       'LoveQuest',
                       style: TextStyle(
-                        fontSize: 36,
+                        fontSize: 42,
+                        fontFamily: 'Kaushan',
                         fontWeight: FontWeight.bold,
                         color: AppColors.primary,
                       ),
@@ -40,11 +34,11 @@ class NameScreen extends StatelessWidget {
               ),
               SizedBox(height: 40),
               Text(
-                'Tell us your name •',
+                'Tell us your name .',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
+                  color: Colors.black,
                 ),
               ),
               SizedBox(height: 20),
@@ -65,7 +59,8 @@ class NameScreen extends StatelessWidget {
                 child: NextButton(
                   onPressed: () {
                     if (authController.fullNameController.text.isNotEmpty) {
-                      authController.setName(authController.fullNameController.text);
+                      authController
+                          .setName(authController.fullNameController.text);
                     } else {
                       Get.snackbar(
                         'Error',

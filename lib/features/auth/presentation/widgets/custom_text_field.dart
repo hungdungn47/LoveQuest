@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:love_quest/core/config/theme.dart';
 
 class CustomTextField extends StatelessWidget {
   final String hintText;
@@ -16,14 +17,24 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextField(
         controller: controller,
         obscureText: obscureText,
         keyboardType: keyboardType,
+        style:
+            TextStyle(fontWeight: FontWeight.w300, color: AppColors.lightText),
         decoration: InputDecoration(
           hintText: hintText,
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(3),
+            borderSide: BorderSide(color: Color(0xffA85485), width: 0.5),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(3),
+            borderSide: BorderSide(color: Color(0xffA85485), width: 0.5),
+          ),
         ),
       ),
     );

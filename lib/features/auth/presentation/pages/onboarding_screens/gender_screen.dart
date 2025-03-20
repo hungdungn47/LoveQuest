@@ -21,16 +21,10 @@ class GenderScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      'Welcome to',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    Text(
                       'LoveQuest',
                       style: TextStyle(
-                        fontSize: 36,
+                        fontSize: 42,
+                        fontFamily: 'Kaushan',
                         fontWeight: FontWeight.bold,
                         color: AppColors.primary,
                       ),
@@ -44,31 +38,32 @@ class GenderScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
+                  color: Colors.black,
                 ),
               ),
               SizedBox(height: 20),
               Obx(() => Column(
-                children: [
-                  _buildGenderOption(
-                    'Male',
-                    authController.selectedGender.value == 'Male',
+                    children: [
+                      _buildGenderOption(
+                        'Male',
+                        authController.selectedGender.value == 'Male',
                         () => authController.selectedGender.value = 'Male',
-                  ),
-                  SizedBox(height: 16),
-                  _buildGenderOption(
-                    'Female',
-                    authController.selectedGender.value == 'Female',
+                      ),
+                      SizedBox(height: 16),
+                      _buildGenderOption(
+                        'Female',
+                        authController.selectedGender.value == 'Female',
                         () => authController.selectedGender.value = 'Female',
-                  ),
-                ],
-              )),
+                      ),
+                    ],
+                  )),
               Spacer(),
               Center(
                 child: NextButton(
                   onPressed: () {
                     if (authController.selectedGender.value.isNotEmpty) {
-                      authController.setGender(authController.selectedGender.value);
+                      authController
+                          .setGender(authController.selectedGender.value);
                     } else {
                       Get.snackbar(
                         'Error',
@@ -87,7 +82,8 @@ class GenderScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildGenderOption(String gender, bool isSelected, VoidCallback onTap) {
+  Widget _buildGenderOption(
+      String gender, bool isSelected, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -122,15 +118,15 @@ class GenderScreen extends StatelessWidget {
               ),
               child: isSelected
                   ? Center(
-                child: Container(
-                  width: 12,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.primary,
-                  ),
-                ),
-              )
+                      child: Container(
+                        width: 12,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    )
                   : SizedBox(),
             ),
           ],

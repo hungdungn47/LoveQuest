@@ -12,5 +12,5 @@ Future<void> initializeDependencies() async {
   Get.put<UserRepository>(UserRepositoryImpl(Get.find<UserApiService>()));
   Get.put<LoginUseCase>(LoginUseCase(Get.find<UserRepository>()));
 
-  Get.lazyPut(() => AuthController());
+  Get.put(AuthController());
 }

@@ -1,16 +1,16 @@
 class UserEntity {
-  final String? id;
-  final String? fullName;
-  final String? nickName;
-  final String? email;
-  final String? job;
-  final String? gender;
-  final String? country;
-  final String? avatar;
-  final String? address;
-  final int? limitMatch;
+  String? id;
+  String? fullName;
+  String? nickName;
+  String? email;
+  String? job;
+  String? gender;
+  String? country;
+  String? avatar;
+  String? address;
+  int? limitMatch;
 
-  const UserEntity({
+  UserEntity({
     this.id,
     this.fullName,
     this.nickName,

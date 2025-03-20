@@ -16,6 +16,7 @@ class HomeScreen extends StatelessWidget {
           'LoveQuest',
           style: TextStyle(
             fontSize: 24,
+            fontFamily: 'Kaushan',
             fontWeight: FontWeight.bold,
             color: AppColors.primary,
           ),
@@ -39,14 +40,14 @@ class HomeScreen extends StatelessWidget {
               ),
               SizedBox(height: 20),
               Obx(() => Text(
-                'Name: ${authController.user.value.fullName ?? "Not set"}',
-                style: TextStyle(fontSize: 18),
-              )),
+                    'Name: ${authController.user.value.nickName ?? "Not set"}',
+                    style: TextStyle(fontSize: 18),
+                  )),
               SizedBox(height: 8),
               Obx(() => Text(
-                'Gender: ${authController.user.value.gender ?? "Not set"}',
-                style: TextStyle(fontSize: 18),
-              )),
+                    'Gender: ${authController.user.value.gender ?? "Not set"}',
+                    style: TextStyle(fontSize: 18),
+                  )),
               SizedBox(height: 8),
               // Obx(() => Text(
               //   'Birthday: ${authController.user.value.birthday ?? "Not set"}',

@@ -23,17 +23,18 @@ class LoginScreen extends StatelessWidget {
                 Center(
                   child: Column(
                     children: [
-                      Text(
-                        'Welcome to',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: AppColors.primary,
-                        ),
-                      ),
+                      // Text(
+                      //   'Welcome to',
+                      //   style: TextStyle(
+                      //     fontSize: 20,
+                      //     color: AppColors.secondary,
+                      //   ),
+                      // ),
                       Text(
                         'LoveQuest',
                         style: TextStyle(
-                          fontSize: 36,
+                          fontSize: 42,
+                          fontFamily: 'Kaushan',
                           fontWeight: FontWeight.bold,
                           color: AppColors.primary,
                         ),
@@ -43,12 +44,11 @@ class LoginScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 40),
                 Text(
-                  'Login •',
+                  'Login .',
                   style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                  ),
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
                 ),
                 SizedBox(height: 20),
                 CustomTextField(
@@ -63,10 +63,10 @@ class LoginScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 20),
                 Obx(() => CustomButton(
-                  text: 'Login',
-                  onPressed: authController.login,
-                  isLoading: authController.isLoading.value,
-                )),
+                      text: 'Login',
+                      onPressed: authController.login,
+                      isLoading: authController.isLoading.value,
+                    )),
                 SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

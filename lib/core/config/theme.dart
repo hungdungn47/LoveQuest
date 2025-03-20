@@ -4,8 +4,8 @@ class AppColors {
   static const Color primary = Color(0xFFA85485);
   static const Color secondary = Color(0xFFEC7FA9);
   static const Color background = Color(0xFFFFEDFA);
-  static const Color text = Color(0xFF333333);
-  static const Color lightText = Color(0xFF777777);
+  static const Color text = Color(0xFF222222);
+  static const Color lightText = Color(0xFF555555);
   static const Color white = Colors.white;
   static const Color black = Colors.black;
 }
@@ -13,12 +13,11 @@ class AppColors {
 class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
+      appBarTheme: AppBarTheme(backgroundColor: AppColors.primary),
       primaryColor: AppColors.primary,
       scaffoldBackgroundColor: AppColors.background,
-
       textTheme: TextTheme(
         displayLarge: TextStyle(
-          fontFamily: 'Kaushan',
           fontSize: 28,
           fontWeight: FontWeight.bold,
           color: AppColors.primary,
