@@ -5,6 +5,7 @@ import 'package:love_quest/core/config/theme.dart';
 import 'package:love_quest/injection_container.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
   await initializeDependencies();
 }
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: AppTheme.lightTheme,
       getPages: AppRoutes.routes,
-      initialRoute: AppRoutes.login,
+      initialRoute: AppRoutes.home,
     );
   }
 }

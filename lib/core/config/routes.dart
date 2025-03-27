@@ -5,6 +5,10 @@ import 'package:love_quest/features/auth/presentation/pages/onboarding_screens/g
 import 'package:love_quest/features/auth/presentation/pages/onboarding_screens/interests_screen.dart';
 import 'package:love_quest/features/auth/presentation/pages/onboarding_screens/name_screen.dart';
 import 'package:love_quest/features/auth/presentation/pages/signup_screen.dart';
+import 'package:love_quest/features/home/presentation/home.binding.dart';
+import 'package:love_quest/features/home/presentation/home.page.dart';
+import 'package:love_quest/features/profile/presentations/profile.binding.dart';
+import 'package:love_quest/features/profile/presentations/profile.page.dart';
 
 class AppRoutes {
   static const String signup = '/signup';
@@ -14,6 +18,7 @@ class AppRoutes {
   static const String gender = '/gender';
   static const String interests = '/interests';
   static const String home = '/home';
+  static const String profile = '/profile';
 
   static final routes = [
     GetPage(name: signup, page: () => SignupScreen()),
@@ -22,6 +27,15 @@ class AppRoutes {
     // GetPage(name: birthday, page: () => BirthdayScreen()),
     GetPage(name: gender, page: () => GenderScreen()),
     GetPage(name: interests, page: () => InterestsScreen()),
-    GetPage(name: home, page: () => HomeScreen()),
+    GetPage(
+        name: home,
+        page: () => HomePage(),
+        binding: HomeBinding(),
+    ),
+    GetPage(
+      name: profile,
+      page: () => ProfilePage(),
+      binding: ProfileBinding(),
+    ),
   ];
 }
