@@ -9,6 +9,8 @@ import 'package:love_quest/features/home/presentation/home.binding.dart';
 import 'package:love_quest/features/home/presentation/home.page.dart';
 import 'package:love_quest/features/profile/presentations/profile.binding.dart';
 import 'package:love_quest/features/profile/presentations/profile.page.dart';
+import 'package:love_quest/features/quiz_game/presentation/lightning_quiz.binding.dart';
+import 'package:love_quest/features/quiz_game/presentation/lightning_quiz.screen.dart';
 
 class AppRoutes {
   static const String signup = '/signup';
@@ -19,6 +21,7 @@ class AppRoutes {
   static const String interests = '/interests';
   static const String home = '/home';
   static const String profile = '/profile';
+  static const String quiz_game = '/quiz-game';
 
   static final routes = [
     GetPage(name: signup, page: () => SignupScreen()),
@@ -28,14 +31,18 @@ class AppRoutes {
     GetPage(name: gender, page: () => GenderScreen()),
     GetPage(name: interests, page: () => InterestsScreen()),
     GetPage(
-        name: home,
-        page: () => HomePage(),
-        binding: HomeBinding(),
+      name: home,
+      page: () => HomePage(),
+      binding: HomeBinding(),
     ),
     GetPage(
       name: profile,
       page: () => ProfilePage(),
       binding: ProfileBinding(),
     ),
+    GetPage(
+        name: quiz_game,
+        page: () => LightningQuizScreen(),
+        binding: LightningQuizBinding())
   ];
 }
