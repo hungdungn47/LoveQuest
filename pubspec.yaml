@@ -39,6 +39,7 @@ dependencies:
   get: ^4.7.2
   socket_io_client: ^3.0.2
   persistent_bottom_nav_bar: ^6.2.1
+  flutter_painter_v2: ^2.1.0+1
 
 dev_dependencies:
   flutter_test:
