@@ -85,6 +85,7 @@ class LightningQuizScreen extends GetView<LightningQuizController> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
+                        width: MediaQuery.of(context).size.width - 48,
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
                           color: Colors.white,

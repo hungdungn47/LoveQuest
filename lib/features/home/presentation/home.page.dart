@@ -4,8 +4,9 @@ import 'package:get/get.dart';
 import 'package:love_quest/core/config/theme.dart';
 import 'package:love_quest/features/home/presentation/home.controller.dart';
 import 'package:love_quest/features/home/widgets/HomePage.dart';
+import 'package:love_quest/features/schedule/presentation/schedule_screen.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
-
+import 'package:love_quest/features/chat/presentation/chat_screen.dart';
 import '../../profile/presentations/profile.page.dart';
 
 class HomePage extends GetView<HomeController> {
@@ -18,8 +19,7 @@ class HomePage extends GetView<HomeController> {
       decoration: NavBarDecoration(
         borderRadius: BorderRadius.only(
             topRight: Radius.circular(32), topLeft: Radius.circular(32)),
-        colorBehindNavBar:
-            AppColors.background,
+        colorBehindNavBar: AppColors.background,
       ),
       controller: controller.persistentTabController,
       screens: _buildScreens(),
@@ -50,8 +50,7 @@ class HomePage extends GetView<HomeController> {
       ),
       confineToSafeArea: true,
       navBarHeight: 64,
-      navBarStyle:
-          NavBarStyle.style1,
+      navBarStyle: NavBarStyle.style1,
       // Choose the nav bar style with this property
     );
   }
@@ -59,7 +58,8 @@ class HomePage extends GetView<HomeController> {
   List<Widget> _buildScreens() {
     return [
       HomePageView(controller: controller),
-      Container(),
+      ScheduleScreen(),
+      const ChatScreen(),
       ProfilePage(),
     ];
   }
@@ -75,6 +75,12 @@ class HomePage extends GetView<HomeController> {
       PersistentBottomNavBarItem(
           icon: Icon(CupertinoIcons.calendar),
           title: ("Schedule"),
+          activeColorPrimary: AppColors.primary,
+          inactiveColorPrimary: CupertinoColors.systemGrey,
+          textStyle: Styles.mediumTextW800),
+      PersistentBottomNavBarItem(
+          icon: Icon(CupertinoIcons.chat_bubble_2),
+          title: ("Messages"),
           activeColorPrimary: AppColors.primary,
           inactiveColorPrimary: CupertinoColors.systemGrey,
           textStyle: Styles.mediumTextW800),
