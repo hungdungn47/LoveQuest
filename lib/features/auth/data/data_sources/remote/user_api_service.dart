@@ -22,8 +22,18 @@ class UserApiServiceImpl implements UserApiService {
   @override
   Future<Map<String, dynamic>> loginUser(
       {required String email, required String password}) async {
-    // TODO: implement loginUser
-    return {"success": "true", "message": "Login successfully"};
+    try {
+      final response = await _client.post('/auth/sign-in', data: {
+        'email': email,
+        'password': password,
+      });
+      print('Sign in response status: ${response.statusCode}');
+      print('Sign in response data: ${response.data}');
+      return response.data;
+    } catch (e) {
+      print('Signup error: $e');
+      rethrow;
+    }
   }
 
   @override

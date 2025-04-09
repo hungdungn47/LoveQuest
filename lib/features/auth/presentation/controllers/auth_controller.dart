@@ -4,6 +4,7 @@ import 'package:love_quest/core/config/routes.dart';
 import 'package:love_quest/core/resources/data_state.dart';
 import 'package:love_quest/features/auth/domain/entities/user.dart';
 import 'package:love_quest/features/auth/domain/usecases/signup.dart';
+import 'package:love_quest/features/auth/domain/usecases/login.dart';
 
 class AuthController extends GetxController {
   final Rx<UserEntity> user = UserEntity().obs;
@@ -67,18 +68,29 @@ class AuthController extends GetxController {
 
     try {
       isLoading.value = true;
+      print('Controller: Starting login process');
 
-      // Here you would integrate with your auth service
-      // For demo purposes, we'll just move to the next screen
-      await Future.delayed(Duration(seconds: 1));
-
-      user.value = UserEntity(
+      final loginUseCase = Get.find<LoginUseCase>();
+      final result = await loginUseCase.call(LoginUserParams(
         email: emailController.text,
-      );
+        password: passwordController.text,
+      ));
 
-      Get.offAllNamed(AppRoutes.home);
+      print('Controller: Login result: $result');
+
+      if (result is DataSuccess) {
+        user.value = UserEntity(
+          email: emailController.text,
+        );
+        Get.offAllNamed(AppRoutes.home);
+      } else if (result is DataFailed) {
+        Get.snackbar('Error', result.exception.toString(),
+            snackPosition: SnackPosition.BOTTOM);
+      }
     } catch (e) {
-      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
+      print('Controller: Login error: $e');
+      Get.snackbar('Error', 'An unexpected error occurred: $e',
+          snackPosition: SnackPosition.BOTTOM);
     } finally {
       isLoading.value = false;
     }

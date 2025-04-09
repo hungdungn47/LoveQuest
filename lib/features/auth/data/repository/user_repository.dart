@@ -22,6 +22,11 @@ class UserRepositoryImpl implements UserRepository {
           await _userApiService.loginUser(email: email, password: password);
       return DataSuccess(result);
     } catch (e) {
+      print('Repository: Login failed with error: $e');
+      if (e is DioException) {
+        return DataFailed(Exception(
+            'Login failed: ${e.response?.data?['message'] ?? e.message}'));
+      }
       return DataFailed(Exception(e));
     }
   }
