@@ -4,7 +4,9 @@ abstract class UserApiService {
   Future<Map<String, dynamic>> loginUser(
       {required String email, required String password});
   Future<Map<String, dynamic>> registerUser(
-      {required String email, required String password});
+      {required String userName,
+      required String email,
+      required String password});
   Future<String> getUserInfo();
 }
 
@@ -26,8 +28,26 @@ class UserApiServiceImpl implements UserApiService {
 
   @override
   Future<Map<String, dynamic>> registerUser(
-      {required String email, required String password}) {
-    // TODO: implement registerUser
-    throw UnimplementedError();
+      {required String userName,
+      required String email,
+      required String password}) async {
+    print('Making signup request with data:');
+    print('Username: $userName');
+    print('Email: $email');
+    print('Password: ${password.length} characters');
+
+    try {
+      final response = await _client.post('/auth/sign-up', data: {
+        'userName': userName,
+        'email': email,
+        'password': password,
+      });
+      print('Signup response status: ${response.statusCode}');
+      print('Signup response data: ${response.data}');
+      return response.data;
+    } catch (e) {
+      print('Signup error: $e');
+      rethrow;
+    }
   }
 }

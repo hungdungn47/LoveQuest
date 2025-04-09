@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:love_quest/core/config/routes.dart';
+import 'package:love_quest/core/resources/data_state.dart';
 import 'package:love_quest/features/auth/domain/entities/user.dart';
+import 'package:love_quest/features/auth/domain/usecases/signup.dart';
 
 class AuthController extends GetxController {
   final Rx<UserEntity> user = UserEntity().obs;
@@ -26,19 +28,31 @@ class AuthController extends GetxController {
 
     try {
       isLoading.value = true;
+      print('Controller: Starting signup process');
 
-      // Here you would integrate with your auth service
-      // For demo purposes, we'll just move to the next screen
-      await Future.delayed(Duration(seconds: 1));
-
-      user.value = UserEntity(
+      final signupUseCase = Get.find<SignupUseCase>();
+      final result = await signupUseCase.call(SignupParams(
+        userName: usernameController.text,
         email: emailController.text,
-        nickName: usernameController.text,
-      );
+        password: passwordController.text,
+      ));
 
-      Get.toNamed(AppRoutes.name);
+      print('Controller: Signup result: $result');
+
+      if (result is DataSuccess) {
+        user.value = UserEntity(
+          email: emailController.text,
+          nickName: usernameController.text,
+        );
+        Get.toNamed(AppRoutes.name);
+      } else if (result is DataFailed) {
+        Get.snackbar('Error', result.exception.toString(),
+            snackPosition: SnackPosition.BOTTOM);
+      }
     } catch (e) {
-      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
+      print('Controller: Signup error: $e');
+      Get.snackbar('Error', 'An unexpected error occurred: $e',
+          snackPosition: SnackPosition.BOTTOM);
     } finally {
       isLoading.value = false;
     }
