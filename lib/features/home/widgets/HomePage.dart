@@ -125,7 +125,7 @@ class HomePageView extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  Get.toNamed(AppRoutes.quiz_game);
+                  Get.toNamed(AppRoutes.cat_game);
                 },
                 child: Container(
                   padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
