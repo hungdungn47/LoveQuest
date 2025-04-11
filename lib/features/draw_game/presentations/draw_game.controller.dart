@@ -89,7 +89,7 @@ class DrawGameController extends GetxController {
       Get.dialog(Test(title: message,));
     });
   }
-  
+
   void sendDataToAnother() {
     int length = _painterController.value?.drawables.length ?? 0;
     if (length > 0) {
