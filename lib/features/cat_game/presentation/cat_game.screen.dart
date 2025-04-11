@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:love_quest/core/config/routes.dart';
 import 'package:love_quest/core/config/theme.dart';
 import 'dart:async';
 import 'dart:math';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:love_quest/features/quiz_game/presentation/lightning_quiz.screen.dart';
+import 'package:get/get.dart';
+import 'package:love_quest/features/quiz_game/presentation/lightning_quiz.binding.dart';
+import 'package:flutter/cupertino.dart';
 
 class CatGameScreen extends StatefulWidget {
   const CatGameScreen({super.key});
@@ -104,6 +109,9 @@ class _CatGameScreenState extends State<CatGameScreen>
         setState(() {
           _isFoodVisible = false;
           _orangePoints += _isGoodFood ? 1 : -2;
+          if (_orangePoints >= 3) {
+            _showWinnerDialog('Orange Cat');
+          }
         });
         _playSound(_isGoodFood);
       }
@@ -124,6 +132,9 @@ class _CatGameScreenState extends State<CatGameScreen>
         setState(() {
           _isFoodVisible = false;
           _blackPoints += _isGoodFood ? 1 : -2;
+          if (_blackPoints >= 3) {
+            _showWinnerDialog('Black Cat');
+          }
         });
         _playSound(_isGoodFood);
       }
@@ -135,6 +146,27 @@ class _CatGameScreenState extends State<CatGameScreen>
     });
   }
 
+  void _showWinnerDialog(String winner) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Congratulations! 🎉'),
+          content: Text('$winner wins the game!'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Get.offAndToNamed(AppRoutes.quiz_game);
+              },
+              child: const Text('Next Game'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -143,6 +175,10 @@ class _CatGameScreenState extends State<CatGameScreen>
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(CupertinoIcons.back, color: Colors.white),
+          onPressed: () => Get.back(),
+        ),
         title: Text(
           'LoveQuest',
           style: TextStyle(

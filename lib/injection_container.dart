@@ -10,7 +10,7 @@ import 'package:love_quest/features/auth/presentation/controllers/auth_controlle
 Future<void> initializeDependencies() async {
   final dioClient = DioClient.instance;
   dioClient.configureDio(
-    baseUrl: 'http://192.168.110.72:3000/api',
+    baseUrl: 'http://192.168.1.12:3000/api',
     defaultHeaders: {
       'Content-Type': 'application/json',
     },
