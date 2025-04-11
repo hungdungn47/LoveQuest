@@ -75,7 +75,7 @@ class DrawGameView extends GetView<DrawGameController> {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(18)),
                           child: IgnorePointer(
-                            ignoring: controller.isYourTurn.value,
+                            ignoring: !controller.isYourTurn.value,
                             child: Listener(
                               onPointerUp: (event) {
                                 controller.sendDataToAnother();

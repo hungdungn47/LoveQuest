@@ -25,7 +25,7 @@ class DrawGameController extends GetxController {
   );
 
   PainterController? get painterController => _painterController.value;
-  RxBool isYourTurn = true.obs;
+  RxBool isYourTurn = false.obs;
   RxBool changeToUpdateUI = true.obs;
   // RxInt curLength = 0.obs;
 
