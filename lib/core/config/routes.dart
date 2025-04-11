@@ -7,6 +7,9 @@ import 'package:love_quest/features/auth/presentation/pages/onboarding_screens/n
 import 'package:love_quest/features/auth/presentation/pages/signup_screen.dart';
 import 'package:love_quest/features/draw_game/presentations/draw_game.binding.dart';
 import 'package:love_quest/features/draw_game/presentations/draw_game.page.dart';
+import 'package:love_quest/features/draw_game/presentations/test.page.dart';
+import 'package:love_quest/features/film/film.bindings.dart';
+import 'package:love_quest/features/film/film.page.dart';
 import 'package:love_quest/features/home/presentation/home.binding.dart';
 import 'package:love_quest/features/home/presentation/home.page.dart';
 import 'package:love_quest/features/profile/presentations/profile.binding.dart';
@@ -22,6 +25,7 @@ class AppRoutes {
   static const String home = '/home';
   static const String profile = '/profile';
   static const String draw_game = '/draw_game_test';
+  static const String film = '/film';
 
   static final routes = [
     GetPage(name: signup, page: () => SignupScreen()),
@@ -43,7 +47,13 @@ class AppRoutes {
     GetPage(
       name: draw_game,
       page: () => DrawGameView(),
+      // page: () => Test(),
       binding: DrawGameBinding(),
+    ),
+    GetPage(
+      name: film,
+      page: () => FilmPage(),
+      binding: FilmBindings(),
     ),
   ];
 }

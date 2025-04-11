@@ -9,9 +9,11 @@ import 'package:love_quest/core/config/events.dart';
 import 'package:love_quest/core/socket/socket_service.dart';
 import 'package:love_quest/extensions/freestyleDrawable.extension.dart';
 import 'package:love_quest/features/draw_game/dto/drawData.dto.dart';
+import 'package:love_quest/features/draw_game/presentations/test.page.dart';
 
 class DrawGameController extends GetxController {
   final SocketService _socketService = SocketService();
+  final TextEditingController _textEditingController = TextEditingController();
   final Rxn<PainterController> _painterController = Rxn<PainterController>(
       PainterController(
         settings: PainterSettings(
@@ -25,8 +27,10 @@ class DrawGameController extends GetxController {
   );
 
   PainterController? get painterController => _painterController.value;
-  RxBool isYourTurn = true.obs;
+  TextEditingController get textEditingController => _textEditingController;
+  RxBool isYourTurn = false.obs;
   RxBool changeToUpdateUI = true.obs;
+  RxString question = ''.obs;
   // RxInt curLength = 0.obs;
 
   @override
@@ -44,6 +48,38 @@ class DrawGameController extends GetxController {
   
   void joinRoom(String roomId) {
     _socketService.sendMessage(EventName.joinRoom, roomId);
+  }
+
+  void handleSubmit() {
+    if(!isYourTurn.value) {
+      _socketService.sendMessage(EventName.answer, {
+        "answer": _textEditingController.text,
+        "roomId": "123456",
+      });
+    } else {
+      question.value = _textEditingController.text;
+    }
+  }
+
+  String checkAnswer(String answer) {
+    if(answer == question.value) {
+      return "You answered correctly";
+    }
+    return "You answered wrongly";
+  }
+
+  void handleListenAnswerResponse() {
+    _socketService.listenToMessages(EventName.answerResponse, (data) {
+      Get.dialog(Test(title: "The opponent's answer is: $data"));
+      final String message = checkAnswer(data);
+      _socketService.sendMessage(EventName.verifyAnswer, message);
+    });
+  }
+
+  void handleListenVerifyAnswer() {
+    _socketService.listenToMessages(EventName.verifyAnswerResponse, (message) {
+      Get.dialog(Test(title: message,));
+    });
   }
   
   void sendDataToAnother() {
