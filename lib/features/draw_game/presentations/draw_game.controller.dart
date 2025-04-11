@@ -28,7 +28,7 @@ class DrawGameController extends GetxController {
 
   PainterController? get painterController => _painterController.value;
   TextEditingController get textEditingController => _textEditingController;
-  RxBool isYourTurn = false.obs;
+  RxBool isYourTurn = true.obs;
   RxBool changeToUpdateUI = true.obs;
   RxString question = ''.obs;
   // RxInt curLength = 0.obs;
@@ -40,6 +40,10 @@ class DrawGameController extends GetxController {
     _socketService.connect();
 
     joinRoom("123456");
+
+    handleListenAnswerResponse();
+
+    handleListenVerifyAnswer();
     
     if(!isYourTurn.value) {
       receivedData();
@@ -72,12 +76,16 @@ class DrawGameController extends GetxController {
     _socketService.listenToMessages(EventName.answerResponse, (data) {
       Get.dialog(Test(title: "The opponent's answer is: $data"));
       final String message = checkAnswer(data);
-      _socketService.sendMessage(EventName.verifyAnswer, message);
+      _socketService.sendMessage(EventName.verifyAnswer, {
+        "message": message,
+        "roomId": "123456"
+      });
     });
   }
 
   void handleListenVerifyAnswer() {
     _socketService.listenToMessages(EventName.verifyAnswerResponse, (message) {
+      print("verify response");
       Get.dialog(Test(title: message,));
     });
   }
