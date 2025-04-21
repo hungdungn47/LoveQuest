@@ -3,24 +3,27 @@ import 'package:get/get.dart';
 import 'signaling.dart';
 
 class CallController extends GetxController {
-  final localRenderer = RTCVideoRenderer();
-  final remoteRenderer = RTCVideoRenderer();
+  final RTCVideoRenderer localRenderer = RTCVideoRenderer();
+  final RTCVideoRenderer remoteRenderer = RTCVideoRenderer();
   late Signaling signaling;
 
-  final userId = 'userA';
-  final peerId = 'userB';
+  final String userId = 'userA';
+  final String peerId = 'userB';
 
   @override
   void onInit() {
     super.onInit();
-    initRenderers();
-    signaling = Signaling(userId, peerId);
-    signaling.init(localRenderer, remoteRenderer);
+    _initRenderersAndSignaling();
   }
 
-  Future<void> initRenderers() async {
+  Future<void> _initRenderersAndSignaling() async {
     await localRenderer.initialize();
     await remoteRenderer.initialize();
+
+    signaling = Signaling(userId, peerId);
+    await signaling.init(); // Không cần truyền local/remote renderer nữa
+    signaling.localRenderer.srcObject = localRenderer.srcObject;
+    signaling.remoteRenderer.srcObject = remoteRenderer.srcObject;
   }
 
   void makeCall() {
@@ -29,9 +32,9 @@ class CallController extends GetxController {
 
   @override
   void onClose() {
+    signaling.dispose();
     localRenderer.dispose();
     remoteRenderer.dispose();
-    signaling.dispose();
     super.onClose();
   }
 }

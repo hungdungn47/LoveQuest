@@ -1,52 +1,67 @@
-import 'dart:convert';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:love_quest/core/socket/socket_service.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class Signaling {
   final SocketService _socketService = SocketService();
   final String userId;
   final String peerId;
-  late IO.Socket socket;
+
   late RTCPeerConnection _peerConnection;
   late MediaStream _localStream;
-  final Map<String, dynamic> _iceServers = {
-    'iceServers': [
-      {'urls': 'stun:stun.l.google.com:19302'},
-    ]
-  };
 
   final RTCVideoRenderer localRenderer;
   final RTCVideoRenderer remoteRenderer;
+
+  bool _isCaller = false;
+  bool _peerConnectionInitialized = false;
+
+  final Map<String, dynamic> _iceServers = {
+    'iceServers': [
+      {'urls': 'stun:stun.l.google.com:19302'},
+      {
+        'urls': 'turn:openrelay.metered.ca:80',
+        'username': 'openrelayproject',
+        'credential': 'openrelayproject',
+      },
+    ],
+  };
 
   Signaling(this.userId, this.peerId)
       : localRenderer = RTCVideoRenderer(),
         remoteRenderer = RTCVideoRenderer();
 
-  Future<void> init(RTCVideoRenderer local, RTCVideoRenderer remote) async {
+  Future<void> init() async {
+    await localRenderer.initialize();
+    await remoteRenderer.initialize();
+
     _socketService.connect();
 
-    _socketService.listenToMessages('offer', (data) async {
-      await _createPeerConnection();
+    _socketService.listenToMessages('signaling_offer', (data) async {
+      _isCaller = false;
+      await _ensurePeerConnectionCreated();
+
       await _peerConnection.setRemoteDescription(
         RTCSessionDescription(data['sdp'], data['type']),
       );
+
       final answer = await _peerConnection.createAnswer();
       await _peerConnection.setLocalDescription(answer);
-      _socketService.sendMessage('answer', {
+
+      _socketService.sendMessage('signaling_answer', {
         'to': data['from'],
+        'from': userId,
         'sdp': answer.sdp,
         'type': answer.type,
       });
     });
 
-    _socketService.listenToMessages('answer', (data) async {
+    _socketService.listenToMessages('signaling_answer', (data) async {
       await _peerConnection.setRemoteDescription(
         RTCSessionDescription(data['sdp'], data['type']),
       );
     });
 
-    _socketService.listenToMessages('ice-candidate', (data) async {
+    _socketService.listenToMessages('signaling_ice-candidate', (data) async {
       final candidate = RTCIceCandidate(
         data['candidate'],
         data['sdpMid'],
@@ -56,23 +71,15 @@ class Signaling {
     });
 
     _localStream = await _createLocalStream();
-    local.srcObject = _localStream;
+    localRenderer.srcObject = _localStream;
   }
 
-  Future<MediaStream> _createLocalStream() async {
-    final mediaConstraints = {
-      'audio': true,
-      'video': {
-        'facingMode': 'user',
-      },
-    };
-    return await navigator.mediaDevices.getUserMedia(mediaConstraints);
-  }
+  Future<void> _ensurePeerConnectionCreated() async {
+    if (_peerConnectionInitialized) return;
 
-  Future<void> _createPeerConnection() async {
     _peerConnection = await createPeerConnection(_iceServers);
+    _peerConnectionInitialized = true;
 
-    // Thay vì addStream, ta dùng addTrack từng track một
     _localStream.getTracks().forEach((track) {
       _peerConnection.addTrack(track, _localStream);
     });
@@ -86,23 +93,37 @@ class Signaling {
 
     _peerConnection.onIceCandidate = (RTCIceCandidate candidate) {
       if (candidate != null) {
-        _socketService.sendMessage('ice-candidate', {
+        _socketService.sendMessage('signaling_ice-candidate', {
           'to': peerId,
+          'from': userId,
           'candidate': candidate.candidate,
           'sdpMid': candidate.sdpMid,
           'sdpMLineIndex': candidate.sdpMLineIndex,
         });
       }
     };
+
+    _peerConnection.onIceConnectionState = (state) {
+      print('ICE connection state: $state');
+    };
+  }
+
+  Future<MediaStream> _createLocalStream() async {
+    final mediaConstraints = {
+      'audio': true,
+      'video': {'facingMode': 'user'}
+    };
+    return await navigator.mediaDevices.getUserMedia(mediaConstraints);
   }
 
   Future<void> makeCall() async {
-    await _createPeerConnection();
+    _isCaller = true;
+    await _ensurePeerConnectionCreated();
 
     final offer = await _peerConnection.createOffer();
     await _peerConnection.setLocalDescription(offer);
 
-    _socketService.sendMessage('offer', {
+    _socketService.sendMessage('signaling_offer', {
       'to': peerId,
       'from': userId,
       'sdp': offer.sdp,
@@ -111,8 +132,11 @@ class Signaling {
   }
 
   void dispose() {
+    localRenderer.dispose();
+    remoteRenderer.dispose();
     _localStream.dispose();
     _peerConnection.close();
-    socket.dispose();
+    _peerConnectionInitialized = false;
+    _socketService.disconnect();
   }
 }
