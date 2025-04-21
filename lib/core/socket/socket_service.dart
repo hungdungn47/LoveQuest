@@ -10,7 +10,7 @@ class SocketService {
 
   void connect() {
     socket = IO.io(
-        'wss://9852-2001-ee0-4a6c-e230-3961-45a6-98aa-ab19.ngrok-free.app',
+        'ws://10.0.2.2:3000',
         IO.OptionBuilder()
             .setTransports(['websocket']) // Set transport to WebSocket
             .disableAutoConnect() // Prevent auto-connection
@@ -20,6 +20,7 @@ class SocketService {
 
     socket.onConnect((_) {
       print('Connected to socket server');
+      sendMessage('register', {'userId': "userA"});
     });
 
     socket.onDisconnect((_) {

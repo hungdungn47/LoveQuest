@@ -41,6 +41,7 @@ dependencies:
   persistent_bottom_nav_bar: ^6.2.1
   flutter_painter_v2: ^2.1.0+1
   video_player: ^2.9.5
+  flutter_webrtc: ^0.13.1+hotfix.1
 
 dev_dependencies:
   flutter_test:

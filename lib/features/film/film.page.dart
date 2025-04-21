@@ -10,9 +10,6 @@ class FilmPage extends GetView<FilmController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text("Video Player"),
-      // ),
       body: Obx(() {
         if (controller.isVideoInitialized.value) {
           return SingleChildScrollView(
@@ -20,143 +17,222 @@ class FilmPage extends GetView<FilmController> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                // Phần hiển thị AppBar khi ở chế độ dọc
                 Obx(() {
                   if (controller.isVertical.value) {
                     return Column(
                       children: [
-                        AppBarCustomize(
-                          title: 'Film', // Sử dụng .value để truy cập giá trị
-                        ),
-                        SizedBox(
-                            height: 240), // Sử dụng .value để truy cập giá trị
+                        AppBarCustomize(title: 'Film'),
+                        SizedBox(height: 240),
                       ],
                     );
                   }
                   return SizedBox();
                 }),
+                // Phần video và controller
                 Obx(() {
-                  return Stack(children: [
-                    GestureDetector(
-                      onTap: controller.handleOnTap,
-                      onDoubleTap: () {
-                        controller.togglePlayPause();
-                      },
-                      child: controller.isVertical.value
-                          ? AspectRatio(
-                              aspectRatio:
-                                  controller.videoController.value.aspectRatio,
-                              child: VideoPlayer(controller.videoController),
-                            )
-                          : FittedBox(
-                              fit: BoxFit.cover,
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width,
-                                height: MediaQuery.of(context).size.height,
-                                child: VideoPlayer(controller.videoController),
-                              ),
-                            ),
-                    ),
-                    Obx(() {
-                      return Positioned(
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        child: AnimatedOpacity(
-                          opacity:
-                              controller.showControllerBlock.value ? 1.0 : 0.0,
-                          duration: Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                          child: IgnorePointer(
-                            ignoring: !controller.showControllerBlock.value,
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 12),
-                                  child: GestureDetector(
-                                    onHorizontalDragStart: (_) {
-                                      controller.showControllerBlock.value = true;
-                                    },
-                                    onHorizontalDragUpdate: (_) {
-                                      controller.showControllerBlock.value = true;
-                                    },
-                                    onHorizontalDragEnd: (_) {
-                                      controller.handleOnTap();
-                                    },
-                                    child: Listener(
-                                      onPointerDown: (e) {
+                  return Stack(
+                    children: [
+                      GestureDetector(
+                        onTap: controller.handleOnTap,
+                        onDoubleTap: controller.togglePlayPause,
+                        child: controller.isVertical.value
+                            ? AspectRatio(
+                          aspectRatio: controller.videoController.value.aspectRatio,
+                          child: VideoPlayer(controller.videoController),
+                        )
+                            : FittedBox(
+                          fit: BoxFit.cover,
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height,
+                            child: VideoPlayer(controller.videoController),
+                          ),
+                        ),
+                      ),
+                      // Thanh điều khiển video
+                      Obx(() {
+                        return Positioned(
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: AnimatedOpacity(
+                            opacity: controller.showControllerBlock.value ? 1.0 : 0.0,
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                            child: IgnorePointer(
+                              ignoring: !controller.showControllerBlock.value,
+                              child: Column(
+                                children: [
+                                  // Thanh tiến độ video
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 12),
+                                    child: GestureDetector(
+                                      onHorizontalDragStart: (_) {
                                         controller.showControllerBlock.value = true;
                                       },
-                                      onPointerMove: (e) {
+                                      onHorizontalDragUpdate: (_) {
                                         controller.showControllerBlock.value = true;
                                       },
-                                      onPointerUp: (e) {
+                                      onHorizontalDragEnd: (_) {
                                         controller.handleOnTap();
+                                        controller.sendSeekVideoEvent();
                                       },
-                                      child: VideoProgressIndicator(
-                                        controller.videoController,
-                                        allowScrubbing: true,
-                                        colors: VideoProgressColors(
-                                          playedColor: Color(0xFFf2f2f2),
-                                          bufferedColor: Color(0xFF898c8d),
-                                          backgroundColor: Color(0xFF3b4042),
+                                      child: Listener(
+                                        onPointerDown: (e) {
+                                          controller.showControllerBlock.value = true;
+                                        },
+                                        onPointerMove: (e) {
+                                          controller.showControllerBlock.value = true;
+                                        },
+                                        onPointerUp: (e) {
+                                          controller.handleOnTap();
+                                          controller.sendSeekVideoEvent();
+                                        },
+                                        child: VideoProgressIndicator(
+                                          controller.videoController,
+                                          allowScrubbing: true,
+                                          colors: VideoProgressColors(
+                                            playedColor: Color(0xFFf2f2f2),
+                                            bufferedColor: Color(0xFF898c8d),
+                                            backgroundColor: Color(0xFF3b4042),
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                SizedBox(height: 16),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        IconButton(
-                                          icon: Icon(
-                                            controller.isVideoPlaying.value
-                                                ? Icons.pause
-                                                : Icons.play_arrow,
-                                            size: 40,
-                                            color: Color(0xFFf2f2f2),
+                                  SizedBox(height: 16),
+                                  // Các nút điều khiển
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          IconButton(
+                                            icon: Icon(
+                                              controller.isVideoPlaying.value
+                                                  ? Icons.pause
+                                                  : Icons.play_arrow,
+                                              size: 40,
+                                              color: Color(0xFFf2f2f2),
+                                            ),
+                                            onPressed: controller.togglePlayPause,
                                           ),
-                                          onPressed: controller.togglePlayPause,
-                                        ),
-                                        SizedBox(width: 18),
-                                        IconButton(
-                                          icon: Icon(
-                                            controller.isMicroOn.value
-                                                ? Icons.mic_rounded
-                                                : Icons.mic_off_rounded,
-                                            size: 36,
-                                            color: Color(0xFFf2f2f2),
+                                          SizedBox(width: 18),
+                                          IconButton(
+                                            icon: Icon(
+                                              controller.isMicroOn.value
+                                                  ? Icons.mic_rounded
+                                                  : Icons.mic_off_rounded,
+                                              size: 36,
+                                              color: Color(0xFFf2f2f2),
+                                            ),
+                                            onPressed: () {
+                                              controller.isMicroOn.toggle();
+                                              // Giả lập trạng thái nói khi bật mic
+                                              // controller.updateSpeakingStatus(
+                                              //     true, controller.isMicroOn.value);
+                                            },
                                           ),
-                                          onPressed: () {},
-                                        ),
-                                      ],
-                                    ),
-                                    IconButton(
-                                      icon: Icon(
-                                        Icons.crop_rotate,
-                                        size: 36,
-                                        color: Color(0xFFf2f2f2),
+                                        ],
                                       ),
-                                      onPressed: controller.handleRotateScreen,
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                      IconButton(
+                                        icon: Icon(
+                                          Icons.crop_rotate,
+                                          size: 36,
+                                          color: Color(0xFFf2f2f2),
+                                        ),
+                                        onPressed: controller.handleRotateScreen,
+                                      ),
+                                    ],
+                                  ),
+                                  // Thêm 2 avatar ở dưới
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    })
-                  ]);
-                })
+                        );
+                      }),
+                    ],
+                  );
+                }),
+                SizedBox(height: 128),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Avatar User 1
+                      Obx(() {
+                        return AnimatedContainer(
+                          duration: Duration(milliseconds: 300),
+                          padding: EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: controller.isUser1Speaking.value
+                                  ? Colors.blueAccent
+                                  : Colors.transparent,
+                              width: 3,
+                            ),
+                            boxShadow: controller.isUser1Speaking.value
+                                ? [
+                              BoxShadow(
+                                color: Colors.blueAccent.withOpacity(0.5),
+                                blurRadius: 10,
+                                spreadRadius: 20,
+                              ),
+                            ]
+                                : [],
+                          ),
+                          child: CircleAvatar(
+                            radius: 64,
+                            backgroundImage: NetworkImage(
+                              'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/20240719_YOONA_3rd_Blue_Dragon_Series_Awards.jpg/960px-20240719_YOONA_3rd_Blue_Dragon_Series_Awards.jpg',
+                            ),
+                          ),
+                        );
+                      }),
+                      SizedBox(width: 20),
+                      // Avatar User 2
+                      Obx(() {
+                        return AnimatedContainer(
+                          duration: Duration(milliseconds: 300),
+                          padding: EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: controller.isUser2Speaking.value
+                                  ? Colors.blueAccent
+                                  : Colors.transparent,
+                              width: 3,
+                            ),
+                            boxShadow: controller.isUser2Speaking.value
+                                ? [
+                              BoxShadow(
+                                color: Colors.blueAccent.withOpacity(0.5),
+                                blurRadius: 10,
+                                spreadRadius: 10,
+                              ),
+                            ]
+                                : [],
+                          ),
+                          child: CircleAvatar(
+                            radius: 64,
+                            backgroundImage: NetworkImage(
+                              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT0oqbvFTuKiAs9U_nqVaZf1LIg9Cx7kQXUA&s',
+                            ),
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
+                ),
               ],
             ),
           );
         } else {
-          return CircularProgressIndicator();
+          return Center(child: CircularProgressIndicator());
         }
       }),
     );

@@ -28,7 +28,7 @@ class DrawGameController extends GetxController {
 
   PainterController? get painterController => _painterController.value;
   TextEditingController get textEditingController => _textEditingController;
-  RxBool isYourTurn = true.obs;
+  RxBool isYourTurn = false.obs;
   RxBool changeToUpdateUI = true.obs;
   RxString question = ''.obs;
   // RxInt curLength = 0.obs;
