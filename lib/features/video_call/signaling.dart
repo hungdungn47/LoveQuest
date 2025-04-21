@@ -26,27 +26,27 @@ class Signaling {
   Future<void> init(RTCVideoRenderer local, RTCVideoRenderer remote) async {
     _socketService.connect();
 
-    _socketService.listenToMessages('offer', (data) async {
+    _socketService.listenToMessages('signaling_offer', (data) async {
       await _createPeerConnection();
       await _peerConnection.setRemoteDescription(
         RTCSessionDescription(data['sdp'], data['type']),
       );
       final answer = await _peerConnection.createAnswer();
       await _peerConnection.setLocalDescription(answer);
-      _socketService.sendMessage('answer', {
+      _socketService.sendMessage('signaling_answer', {
         'to': data['from'],
         'sdp': answer.sdp,
         'type': answer.type,
       });
     });
 
-    _socketService.listenToMessages('answer', (data) async {
+    _socketService.listenToMessages('signaling_answer', (data) async {
       await _peerConnection.setRemoteDescription(
         RTCSessionDescription(data['sdp'], data['type']),
       );
     });
 
-    _socketService.listenToMessages('ice-candidate', (data) async {
+    _socketService.listenToMessages('signaling_ice-candidate', (data) async {
       final candidate = RTCIceCandidate(
         data['candidate'],
         data['sdpMid'],
@@ -86,7 +86,7 @@ class Signaling {
 
     _peerConnection.onIceCandidate = (RTCIceCandidate candidate) {
       if (candidate != null) {
-        _socketService.sendMessage('ice-candidate', {
+        _socketService.sendMessage('signaling_ice-candidate', {
           'to': peerId,
           'candidate': candidate.candidate,
           'sdpMid': candidate.sdpMid,
@@ -102,7 +102,7 @@ class Signaling {
     final offer = await _peerConnection.createOffer();
     await _peerConnection.setLocalDescription(offer);
 
-    _socketService.sendMessage('offer', {
+    _socketService.sendMessage('signaling_offer', {
       'to': peerId,
       'from': userId,
       'sdp': offer.sdp,
