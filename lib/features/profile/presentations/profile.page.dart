@@ -23,7 +23,7 @@ class ProfilePage extends GetView<ProfileController> {
               child: Column(
                 children: [
                   PhotoPage(),
-                  InterestWidget(hobbies: ["Books", "Gym", "Cycling"],),
+                  InterestWidget(),
                   InfoPage()
               ],
             ),
