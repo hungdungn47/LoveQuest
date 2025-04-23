@@ -6,6 +6,7 @@ import 'package:love_quest/features/home/widgets/PageViewItem.dart';
 
 import '../../../core/config/theme.dart';
 import '../../../widgets/Appbar.dart';
+import 'loading_screen.dart';
 
 class HomePageView extends StatelessWidget {
   final HomeController controller;
@@ -124,7 +125,18 @@ class HomePageView extends StatelessWidget {
                 ],
               ),
               GestureDetector(
-                onTap: () {
+                onTap: () async {
+                  // Chuyển sang màn hình loading
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoadingScreen()),
+                  );
+
+                  // Giả lập quá trình tìm kiếm người chơi
+                  await Future.delayed(Duration(seconds: 3));
+
+                  // Quay lại màn hình chính khi tìm được đối thủ
+                  Navigator.pop(context);
                   Get.toNamed(AppRoutes.cat_game);
                 },
                 child: Container(
