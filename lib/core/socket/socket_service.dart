@@ -10,7 +10,7 @@ class SocketService {
 
   void connect() {
     socket = IO.io(
-        'http://your-server-url:PORT',
+        'http://192.168.10.249:3000',
         IO.OptionBuilder()
             .setTransports(['websocket']) // Set transport to WebSocket
             .disableAutoConnect() // Prevent auto-connection

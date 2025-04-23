@@ -23,8 +23,13 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
       Get.put(ChatController());
     }
     controller = Get.find<ChatController>();
+
+    // Use addPostFrameCallback to defer the operation until after the build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.loadMessages(widget.user.id);
+    });
     // Load messages when the conversation screen is opened
-    controller.loadMessages(widget.user.id);
+    // controller.loadMessages(widget.user.id);
   }
 
   @override
