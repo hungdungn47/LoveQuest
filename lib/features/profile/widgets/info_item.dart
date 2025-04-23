@@ -6,7 +6,8 @@ class InfoItem extends StatelessWidget {
   final String title;
   final String value;
   final IconData icon;
-  const InfoItem({super.key, required this.title, required this.value, required this.icon});
+  final VoidCallback? onTap;
+  const InfoItem({super.key, required this.title, required this.value, required this.icon, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -45,10 +46,13 @@ class InfoItem extends StatelessWidget {
                   SizedBox(
                     width: 16,
                   ),
-                  Icon(
-                    Icons.arrow_forward_ios_sharp,
-                    color: Colors.black,
-                    size: 16,
+                  GestureDetector(
+                    onTap: onTap,
+                    child: Icon(
+                      Icons.arrow_forward_ios_sharp,
+                      color: Colors.black,
+                      size: 16,
+                    ),
                   )
                 ],
               ))
