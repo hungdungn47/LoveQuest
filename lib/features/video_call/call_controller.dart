@@ -14,12 +14,24 @@ class CallController extends GetxController {
   }
 
   Future<void> _initSignaling() async {
-    signaling = Signaling(userId, peerId);
-    await signaling.init(); // Không cần renderer nữa
+    try {
+      print('Initializing signaling...');
+      signaling = Signaling(userId, peerId);
+      await signaling.init(); // Không cần renderer nữa
+      print('Signaling initialized successfully');
+    } catch (e) {
+      print('Error initializing signaling: $e');
+    }
   }
 
   void makeCall() {
-    signaling.makeCall();
+    try {
+      print('Making call...');
+      signaling.makeCall();
+      print('Call initiated');
+    } catch (e) {
+      print('Error making call: $e');
+    }
   }
 
   @override

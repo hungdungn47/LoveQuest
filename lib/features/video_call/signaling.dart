@@ -11,6 +11,7 @@ class Signaling {
 
   bool _isCaller = false;
   bool _peerConnectionInitialized = false;
+  bool _isInitialized = false;
 
   final Map<String, dynamic> _iceServers = {
     'iceServers': [
@@ -29,104 +30,153 @@ class Signaling {
   Signaling(this.userId, this.peerId);
 
   Future<void> init() async {
-    _socketService.connect();
+    try {
+      print('Initializing signaling...');
+      bool connected = await _socketService.connect();
+      if (!connected) {
+        throw Exception('Failed to connect to socket server');
+      }
 
-    _socketService.listenToMessages('signaling_offer', (data) async {
-      _isCaller = false;
-      await _ensurePeerConnectionCreated();
+      _socketService.listenToMessages('signaling_offer', (data) async {
+        print('Received offer from ${data['from']}');
+        _isCaller = false;
+        await _ensurePeerConnectionCreated();
 
-      await _peerConnection.setRemoteDescription(
-        RTCSessionDescription(data['sdp'], data['type']),
-      );
+        await _peerConnection.setRemoteDescription(
+          RTCSessionDescription(data['sdp'], data['type']),
+        );
 
-      final answer = await _peerConnection.createAnswer();
-      await _peerConnection.setLocalDescription(answer);
+        final answer = await _peerConnection.createAnswer();
+        await _peerConnection.setLocalDescription(answer);
 
-      _socketService.sendMessage('signaling_answer', {
-        'to': data['from'],
-        'from': userId,
-        'sdp': answer.sdp,
-        'type': answer.type,
+        _socketService.sendMessage('signaling_answer', {
+          'to': data['from'],
+          'from': userId,
+          'sdp': answer.sdp,
+          'type': answer.type,
+        });
       });
-    });
 
-    _socketService.listenToMessages('signaling_answer', (data) async {
-      await _peerConnection.setRemoteDescription(
-        RTCSessionDescription(data['sdp'], data['type']),
-      );
-    });
+      _socketService.listenToMessages('signaling_answer', (data) async {
+        print('Received answer from ${data['from']}');
+        await _peerConnection.setRemoteDescription(
+          RTCSessionDescription(data['sdp'], data['type']),
+        );
+      });
 
-    _socketService.listenToMessages('signaling_ice-candidate', (data) async {
-      final candidate = RTCIceCandidate(
-        data['candidate'],
-        data['sdpMid'],
-        data['sdpMLineIndex'],
-      );
-      await _peerConnection.addCandidate(candidate);
-    });
+      _socketService.listenToMessages('signaling_ice-candidate', (data) async {
+        print('Received ICE candidate from ${data['from']}');
+        final candidate = RTCIceCandidate(
+          data['candidate'],
+          data['sdpMid'],
+          data['sdpMLineIndex'],
+        );
+        await _peerConnection.addCandidate(candidate);
+      });
 
-    _localStream = await _createLocalStream();
+      _localStream = await _createLocalStream();
+      _isInitialized = true;
+      print('Signaling initialized successfully');
+    } catch (e) {
+      print('Error initializing signaling: $e');
+      rethrow;
+    }
   }
 
   Future<void> _ensurePeerConnectionCreated() async {
     if (_peerConnectionInitialized) return;
 
-    _peerConnection = await createPeerConnection(_iceServers);
-    _peerConnectionInitialized = true;
+    try {
+      print('Creating peer connection...');
+      _peerConnection = await createPeerConnection(_iceServers);
+      _peerConnectionInitialized = true;
 
-    _localStream.getTracks().forEach((track) {
-      _peerConnection.addTrack(track, _localStream);
-    });
+      _localStream.getTracks().forEach((track) {
+        _peerConnection.addTrack(track, _localStream);
+      });
 
-    _peerConnection.onTrack = (event) {
-      // Có thể ghi log để xác nhận âm thanh nhận về
-      print('Audio track received');
-    };
+      _peerConnection.onTrack = (event) {
+        print('Audio track received');
+      };
 
-    _peerConnection.onIceCandidate = (RTCIceCandidate candidate) {
-      if (candidate != null) {
-        _socketService.sendMessage('signaling_ice-candidate', {
-          'to': peerId,
-          'from': userId,
-          'candidate': candidate.candidate,
-          'sdpMid': candidate.sdpMid,
-          'sdpMLineIndex': candidate.sdpMLineIndex,
-        });
-      }
-    };
+      _peerConnection.onIceCandidate = (RTCIceCandidate candidate) {
+        if (candidate != null) {
+          print('Sending ICE candidate to $peerId');
+          _socketService.sendMessage('signaling_ice-candidate', {
+            'to': peerId,
+            'from': userId,
+            'candidate': candidate.candidate,
+            'sdpMid': candidate.sdpMid,
+            'sdpMLineIndex': candidate.sdpMLineIndex,
+          });
+        }
+      };
 
-    _peerConnection.onIceConnectionState = (state) {
-      print('ICE connection state: $state');
-    };
+      _peerConnection.onIceConnectionState = (state) {
+        print('ICE connection state: $state');
+        if (state == RTCIceConnectionState.RTCIceConnectionStateConnected) {
+          print('Connection established successfully.');
+        } else if (state == RTCIceConnectionState.RTCIceConnectionStateFailed) {
+          print('Connection failed');
+        }
+      };
+    } catch (e) {
+      print('Error creating peer connection: $e');
+      rethrow;
+    }
   }
 
   Future<MediaStream> _createLocalStream() async {
-    final mediaConstraints = {
-      'audio': true,
-      'video': false,
-    };
-    return await navigator.mediaDevices.getUserMedia(mediaConstraints);
+    try {
+      print('Creating local stream...');
+      final mediaConstraints = {
+        'audio': true,
+        'video': false,
+      };
+      final stream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
+      print('Local stream created successfully');
+      return stream;
+    } catch (e) {
+      print('Error creating local stream: $e');
+      rethrow;
+    }
   }
 
   Future<void> makeCall() async {
-    _isCaller = true;
-    await _ensurePeerConnectionCreated();
+    if (!_isInitialized) {
+      print('Signaling not initialized');
+      return;
+    }
 
-    final offer = await _peerConnection.createOffer();
-    await _peerConnection.setLocalDescription(offer);
+    try {
+      print('Making call to $peerId...');
+      _isCaller = true;
+      await _ensurePeerConnectionCreated();
 
-    _socketService.sendMessage('signaling_offer', {
-      'to': peerId,
-      'from': userId,
-      'sdp': offer.sdp,
-      'type': offer.type,
-    });
+      final offer = await _peerConnection.createOffer();
+      await _peerConnection.setLocalDescription(offer);
+
+      _socketService.sendMessage('signaling_offer', {
+        'to': peerId,
+        'from': userId,
+        'sdp': offer.sdp,
+        'type': offer.type,
+      });
+      print('Call offer sent successfully');
+    } catch (e) {
+      print('Error making call: $e');
+      rethrow;
+    }
   }
 
   void dispose() {
+    print('Disposing signaling...');
     _localStream.dispose();
-    _peerConnection.close();
+    if (_peerConnectionInitialized) {
+      _peerConnection.close();
+    }
     _peerConnectionInitialized = false;
     _socketService.disconnect();
+    print('Signaling disposed');
   }
 }
