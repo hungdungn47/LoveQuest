@@ -13,6 +13,8 @@ class Signaling {
   bool _peerConnectionInitialized = false;
   bool _isInitialized = false;
 
+  MediaStream get localStream => _localStream;
+
   final Map<String, dynamic> _iceServers = {
     'iceServers': [
       {'url': 'stun:stun.l.google.com:19302'},
