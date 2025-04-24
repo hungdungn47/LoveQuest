@@ -1,10 +1,7 @@
-import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart';
 import 'signaling.dart';
 
 class CallController extends GetxController {
-  final RTCVideoRenderer localRenderer = RTCVideoRenderer();
-  final RTCVideoRenderer remoteRenderer = RTCVideoRenderer();
   late Signaling signaling;
 
   final String userId = 'userA';
@@ -13,17 +10,12 @@ class CallController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _initRenderersAndSignaling();
+    _initSignaling();
   }
 
-  Future<void> _initRenderersAndSignaling() async {
-    await localRenderer.initialize();
-    await remoteRenderer.initialize();
-
+  Future<void> _initSignaling() async {
     signaling = Signaling(userId, peerId);
-    await signaling.init(); // Không cần truyền local/remote renderer nữa
-    signaling.localRenderer.srcObject = localRenderer.srcObject;
-    signaling.remoteRenderer.srcObject = remoteRenderer.srcObject;
+    await signaling.init(); // Không cần renderer nữa
   }
 
   void makeCall() {
@@ -33,8 +25,6 @@ class CallController extends GetxController {
   @override
   void onClose() {
     signaling.dispose();
-    localRenderer.dispose();
-    remoteRenderer.dispose();
     super.onClose();
   }
 }

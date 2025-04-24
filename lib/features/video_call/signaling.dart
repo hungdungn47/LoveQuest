@@ -9,15 +9,15 @@ class Signaling {
   late RTCPeerConnection _peerConnection;
   late MediaStream _localStream;
 
-  final RTCVideoRenderer localRenderer;
-  final RTCVideoRenderer remoteRenderer;
-
   bool _isCaller = false;
   bool _peerConnectionInitialized = false;
 
   final Map<String, dynamic> _iceServers = {
     'iceServers': [
-      {'urls': 'stun:stun.l.google.com:19302'},
+      {'url': 'stun:stun.l.google.com:19302'},
+      {'url': 'stun:stun1.l.google.com:19302'},
+      {'url': 'stun:stun2.l.google.com:19302'},
+      {'url': 'stun:stun3.l.google.com:19302'},
       {
         'urls': 'turn:openrelay.metered.ca:80',
         'username': 'openrelayproject',
@@ -26,14 +26,9 @@ class Signaling {
     ],
   };
 
-  Signaling(this.userId, this.peerId)
-      : localRenderer = RTCVideoRenderer(),
-        remoteRenderer = RTCVideoRenderer();
+  Signaling(this.userId, this.peerId);
 
   Future<void> init() async {
-    await localRenderer.initialize();
-    await remoteRenderer.initialize();
-
     _socketService.connect();
 
     _socketService.listenToMessages('signaling_offer', (data) async {
@@ -71,7 +66,6 @@ class Signaling {
     });
 
     _localStream = await _createLocalStream();
-    localRenderer.srcObject = _localStream;
   }
 
   Future<void> _ensurePeerConnectionCreated() async {
@@ -84,11 +78,9 @@ class Signaling {
       _peerConnection.addTrack(track, _localStream);
     });
 
-    _peerConnection.onTrack = (RTCTrackEvent event) {
-      if (event.streams.isNotEmpty) {
-        print('Remote track received');
-        remoteRenderer.srcObject = event.streams[0];
-      }
+    _peerConnection.onTrack = (event) {
+      // Có thể ghi log để xác nhận âm thanh nhận về
+      print('Audio track received');
     };
 
     _peerConnection.onIceCandidate = (RTCIceCandidate candidate) {
@@ -111,7 +103,7 @@ class Signaling {
   Future<MediaStream> _createLocalStream() async {
     final mediaConstraints = {
       'audio': true,
-      'video': {'facingMode': 'user'}
+      'video': false,
     };
     return await navigator.mediaDevices.getUserMedia(mediaConstraints);
   }
@@ -132,8 +124,6 @@ class Signaling {
   }
 
   void dispose() {
-    localRenderer.dispose();
-    remoteRenderer.dispose();
     _localStream.dispose();
     _peerConnection.close();
     _peerConnectionInitialized = false;
