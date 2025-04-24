@@ -4,8 +4,8 @@ import 'signaling.dart';
 class CallController extends GetxController {
   late Signaling signaling;
 
-  final String userId = 'userA';
-  final String peerId = 'userB';
+  final String userId = 'userB';
+  final String peerId = 'userA';
 
   @override
   void onInit() {
