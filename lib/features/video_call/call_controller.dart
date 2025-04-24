@@ -7,10 +7,23 @@ class CallController extends GetxController {
   final String userId = 'userA';
   final String peerId = 'userB';
 
+  final RxBool isMicEnabled = true.obs;
+
   @override
   void onInit() {
     super.onInit();
     _initSignaling();
+  }
+
+  void toggleMic() {
+    final audioTracks = signaling.localStream.getAudioTracks();
+    if (audioTracks.isNotEmpty) {
+      final enabled = isMicEnabled.value;
+      audioTracks.forEach((track) {
+        track.enabled = !enabled;
+      });
+      isMicEnabled.value = !enabled;
+    }
   }
 
   Future<void> _initSignaling() async {

@@ -15,9 +15,25 @@ class CallPage extends GetView<CallController> {
           style: TextStyle(fontSize: 24),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: controller.makeCall,
-        child: const Icon(Icons.call),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton(
+            heroTag: "call",
+            onPressed: controller.makeCall,
+            child: const Icon(Icons.call),
+          ),
+          const SizedBox(height: 16),
+          Obx(() => FloatingActionButton(
+            heroTag: "mic",
+            onPressed: controller.toggleMic,
+            backgroundColor:
+            controller.isMicEnabled.value ? Colors.green : Colors.red,
+            child: Icon(controller.isMicEnabled.value
+                ? Icons.mic
+                : Icons.mic_off),
+          )),
+        ],
       ),
     );
   }
