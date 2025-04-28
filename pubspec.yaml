@@ -42,6 +42,7 @@ dependencies:
   flutter_painter_v2: ^2.1.0+1
   video_player: ^2.9.5
   flutter_webrtc: ^0.13.1+hotfix.1
+  carousel_slider: ^5.0.0
 
 dev_dependencies:
   flutter_test:

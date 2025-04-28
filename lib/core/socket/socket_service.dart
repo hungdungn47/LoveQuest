@@ -14,7 +14,7 @@ class SocketService {
       print('Attempting to connect to socket server...');
       socket = IO.io(
           'ws://10.0.2.2:3000',
-          // 'wss://3aea-14-191-139-103.ngrok-free.app',
+          // 'wss://b690-14-191-138-143.ngrok-free.app',
           IO.OptionBuilder()
               .setTransports(['websocket']) // Set transport to WebSocket
               .disableAutoConnect() // Prevent auto-connection
