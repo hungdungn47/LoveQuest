@@ -11,4 +11,8 @@ class EventName {
   // Film Event
   static final String filmSender = 'filmSender';
   static final String filmReceiver = 'filmReceiver';
+  //Virtual room
+  static final String online = 'online';
+  static final String matching = 'matching';
+  static final String cancel = 'cancel';
 }

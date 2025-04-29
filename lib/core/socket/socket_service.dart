@@ -26,6 +26,10 @@ class SocketService {
         print('Connected to socket server successfully');
         isConnected = true;
         sendMessage('register', {'userId': "userA"});
+        sendMessage('online', {
+          "userId": "456",
+          "gender": "MALE"
+        });
       });
 
       socket.onDisconnect((_) {

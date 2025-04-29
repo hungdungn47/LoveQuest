@@ -16,8 +16,11 @@ import 'package:love_quest/features/home/presentation/home.binding.dart';
 import 'package:love_quest/features/home/presentation/home.page.dart';
 import 'package:love_quest/features/profile/presentations/profile.binding.dart';
 import 'package:love_quest/features/profile/presentations/profile.page.dart';
+import 'package:love_quest/features/test/test.binding.dart';
 import 'package:love_quest/features/video_call/call_binding.dart';
 import 'package:love_quest/features/video_call/call_page.dart';
+
+import '../../features/test/test.page.dart';
 
 class AppRoutes {
   static const String signup = '/signup';
@@ -32,6 +35,7 @@ class AppRoutes {
   static const String film = '/film';
   static const String filmChoosing = '/filmChoosing';
   static const String call_vid = '/call_vid';
+  static const String test = '/test';
 
   static final routes = [
     GetPage(name: signup, page: () => SignupScreen()),
@@ -70,6 +74,11 @@ class AppRoutes {
       name: call_vid,
       page: () => CallPage(),
       binding: CallBinding(),
+    ),
+    GetPage(
+      name: test,
+      page: () => TestPage(),
+      binding: TestBindings(),
     ),
   ];
 }
