@@ -168,19 +168,24 @@ class DrawGameView extends GetView<DrawGameController> {
                         SizedBox(
                           width: 18,
                         ),
-                        GestureDetector(
-                          onTap: controller.handleSubmit,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 24),
-                            decoration: BoxDecoration(
-                                color: AppColors.primary,
-                                borderRadius: BorderRadius.circular(12)),
-                            child: Text(
-                              "Submit",
-                              style: Styles.mediumTextW800
-                                  .copyWith(color: Colors.white),
-                            ),
+                        AbsorbPointer(
+                          absorbing: controller.questionSubmitted.value,
+                          child: GestureDetector(
+                            onTap: controller.handleSubmit,
+                            child: Obx(() {
+                              return Container(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 8, horizontal: 24),
+                                decoration: BoxDecoration(
+                                    color: (controller.isYourTurn.value && controller.questionSubmitted.value) ? Colors.grey :AppColors.primary,
+                                    borderRadius: BorderRadius.circular(12)),
+                                child: Text(
+                                  "Submit",
+                                  style: Styles.mediumTextW800
+                                      .copyWith(color: Colors.white),
+                                ),
+                              );
+                            }),
                           ),
                         )
                       ]),

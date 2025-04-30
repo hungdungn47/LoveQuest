@@ -7,6 +7,7 @@ import 'package:flutter_painter_v2/flutter_painter.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:love_quest/core/config/events.dart';
+import 'package:love_quest/core/config/routes.dart';
 import 'package:love_quest/core/global/global.controller.dart';
 import 'package:love_quest/core/socket/socket_service.dart';
 import 'package:love_quest/extensions/freestyleDrawable.extension.dart';
@@ -31,6 +32,7 @@ class DrawGameController extends GetxController {
 
   PainterController? get painterController => _painterController.value;
   TextEditingController get textEditingController => _textEditingController;
+  RxBool questionSubmitted = false.obs;
   RxBool isYourTurn = false.obs;
   RxBool changeToUpdateUI = true.obs;
   RxString question = ''.obs;
@@ -50,6 +52,8 @@ class DrawGameController extends GetxController {
     _handleGameRefesh();
 
     _handleGameEnd();
+
+    _handleResponseSubmitQuestion();
 
     // handleListenAnswerResponse();
 
@@ -95,12 +99,22 @@ class DrawGameController extends GetxController {
       print("Game refesh");
       startCountdown();
       isYourTurn.value = !isYourTurn.value;
+      questionSubmitted.value = false;
+      textEditingController.text = '';
+    });
+  }
+
+  void _handleResponseSubmitQuestion() {
+    _socketService.listenToMessages(EventName.draw_submit_question, (data) {
+      print("Hello submited");
+      questionSubmitted.value = true;
     });
   }
 
   void _handleGameEnd() {
     _socketService.listenToMessages(EventName.draw_end, (data) {
       print("Game ended");
+      Get.toNamed(AppRoutes.filmChoosing);
     });
   }
   
@@ -129,17 +143,6 @@ class DrawGameController extends GetxController {
     }
     return "You answered wrongly";
   }
-
-  // void handleListenAnswerResponse() {
-  //   _socketService.listenToMessages(EventName.answerResponse, (data) {
-  //     Get.dialog(Test(title: "The opponent's answer is: $data"));
-  //     final String message = checkAnswer(data);
-  //     _socketService.sendMessage(EventName.verifyAnswer, {
-  //       "message": message,
-  //       "roomId": "123456"
-  //     });
-  //   });
-  // }
 
   void _handleListenVerifyAnswer() {
     _socketService.listenToMessages(EventName.draw_confirm, (data) {
