@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:ui' as ui;
 
@@ -33,6 +34,8 @@ class DrawGameController extends GetxController {
   RxBool isYourTurn = false.obs;
   RxBool changeToUpdateUI = true.obs;
   RxString question = ''.obs;
+  RxInt remainingSeconds = 120.obs;
+  Timer? countdownTimer;
   // RxInt curLength = 0.obs;
 
   @override
@@ -59,6 +62,18 @@ class DrawGameController extends GetxController {
     }
   }
 
+  void startCountdown() {
+    countdownTimer?.cancel(); // Clear previous timer
+    remainingSeconds.value = 120;
+    countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (remainingSeconds.value > 0) {
+        remainingSeconds.value--;
+      } else {
+        timer.cancel();
+      }
+    });
+  }
+
   Future<void> handleOnInit() async {
     await _socketService.connect();
     joinRoom("123456");
@@ -78,6 +93,7 @@ class DrawGameController extends GetxController {
   void _handleGameRefesh() {
     _socketService.listenToMessages(EventName.draw_refresh, (data) {
       print("Game refesh");
+      startCountdown();
       isYourTurn.value = !isYourTurn.value;
     });
   }
