@@ -60,12 +60,14 @@ class DrawGameView extends GetView<DrawGameController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      controller.isYourTurn.value
-                          ? "Let's draw something cute"
-                          : "He is Drawing something",
-                      style: Styles.bigTextW800,
-                    ),
+                    Obx(() {
+                      return Text(
+                        controller.isYourTurn.value
+                            ? "Let's draw something cute"
+                            : "He is Drawing something",
+                        style: Styles.bigTextW800,
+                      );
+                    }),
                     SizedBox(
                       height: 32,
                     ),
@@ -111,12 +113,14 @@ class DrawGameView extends GetView<DrawGameController> {
                     SizedBox(
                       height: 32,
                     ),
-                    Text(
-                      controller.isYourTurn.value
-                          ? "Tell us what it is. She won't know it"
-                          : "What do you think it is ?",
-                      style: Styles.bigTextW800,
-                    ),
+                    Obx(() {
+                      return Text(
+                        controller.isYourTurn.value
+                            ? "Tell us what it is. She won't know it"
+                            : "What do you think it is ?",
+                        style: Styles.bigTextW800,
+                      );
+                    }),
                     SizedBox(
                       height: 16,
                     ),
