@@ -248,6 +248,7 @@ class FilmController extends GetxController {
 
   void _handleToggleOpponentMicro() {
     _socketService.listenToMessages(EventName.turnOnMicro, (data) {
+      print("data ${data} ");
       bool isTurnOn = data["isTurnOn"];
       isMic2On.value = isTurnOn;
     });
