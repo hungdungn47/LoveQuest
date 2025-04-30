@@ -27,31 +27,35 @@ class DrawGameView extends GetView<DrawGameController> {
               SizedBox(
                 height: 32,
               ),
-              Padding(
-                padding: EdgeInsets.only(left: 24),
-                child: Stack(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(left: 24, right: 24),
-                      // width: MediaQuery.of(context).size.width - 48,
-                      height: 18,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20)),
-                    ),
-                    Positioned(
-                      left: 0,
-                      child: Container(
-                        width: 96,
+              Obx(() {
+                final totalWidth = MediaQuery.of(context).size.width - 48;
+                final progressWidth = totalWidth * (controller.remainingSeconds.value / 120);
+
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  child: Stack(
+                    children: [
+                      Container(
                         height: 18,
+                        width: totalWidth,
                         decoration: BoxDecoration(
-                            color: Colors.blueAccent,
-                            borderRadius: BorderRadius.circular(20)),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                       ),
-                    )
-                  ],
-                ),
-              ),
+                      AnimatedContainer(
+                        duration: Duration(milliseconds: 300),
+                        height: 18,
+                        width: progressWidth,
+                        decoration: BoxDecoration(
+                          color: Colors.blueAccent,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
               SizedBox(
                 height: 48,
               ),
