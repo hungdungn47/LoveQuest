@@ -3,37 +3,67 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:love_quest/core/config/events.dart';
+import 'package:love_quest/core/global/global.controller.dart';
 import 'package:love_quest/core/socket/socket_service.dart';
 import 'package:video_player/video_player.dart';
 
+import '../video_call/signaling.dart';
 import 'enum/index.dart';
 
 class FilmController extends GetxController {
   late VideoPlayerController _videoController;
   RxBool isVideoInitialized = false.obs;
   RxBool isVideoPlaying = false.obs;
-  RxBool isMicroOn = false.obs;
   RxBool isVertical = true.obs;
   RxBool showControllerBlock = false.obs;
   Timer? timer;
   final SocketService _socketService = SocketService();
+  final GlobalController _globalController = Get.find<GlobalController>();
   var isUser1Speaking = false.obs;
   var isUser2Speaking = false.obs;
+  RxString filmName = ''.obs;
+  late Signaling signaling;
+
+  final String userId = 'userA';
+  final String peerId = 'userB';
 
   @override
   void onInit() {
     super.onInit();
+
+    handleInit();
+    // _videoController = VideoPlayerController.networkUrl(Uri.parse(
+    //     'https://ec93-14-191-139-167.ngrok-free.app/upload/stream/1745060757236-test.mp4')
+    // );
+    // _videoController.initialize().then((_) {
+    //   isVideoInitialized.value = true;
+    //   // videoController.setLooping(true);
+    // });
+    //
+    // _socketService.connect();
+    //
+    // _socketService.sendMessage(EventName.joinRoom, "123456");
+    //
+    // Timer.periodic(Duration(seconds: 3), (timer) {
+    //   isUser1Speaking.value = !isUser1Speaking.value;
+    //   isUser2Speaking.value = !isUser1Speaking.value;
+    // });
+    //
+    // rotatePortrait();
+    //
+    // listenFilmControlResponse();
+  }
+
+  Future<void> handleInit() async {
+    final data = Get.arguments;
+    final String filmUrl = data["filmUrl"];
+    final String duration = data["duration"];
+    filmName.value = data["filmName"];
     _videoController = VideoPlayerController.networkUrl(Uri.parse(
-        'https://ec93-14-191-139-167.ngrok-free.app/upload/stream/1745060757236-test.mp4')
-    );
+        'https://d811-14-191-138-195.ngrok-free.app/upload/stream/1746013420660-purple_heart.mp4'));
     _videoController.initialize().then((_) {
       isVideoInitialized.value = true;
-      // videoController.setLooping(true);
     });
-
-    _socketService.connect();
-
-    _socketService.sendMessage(EventName.joinRoom, "123456");
 
     Timer.periodic(Duration(seconds: 3), (timer) {
       isUser1Speaking.value = !isUser1Speaking.value;
@@ -43,6 +73,24 @@ class FilmController extends GetxController {
     rotatePortrait();
 
     listenFilmControlResponse();
+
+    _handleToggleOpponentMicro();
+
+    await _initSignaling();
+
+    if(_globalController.gender.value == "MALE") {
+      makeCall();
+    }
+  }
+
+  void makeCall() {
+    try {
+      print('Making call...');
+      signaling.makeCall();
+      print('Call initiated');
+    } catch (e) {
+      print('Error making call: $e');
+    }
   }
 
   VideoPlayerController get videoController => _videoController;
@@ -57,9 +105,7 @@ class FilmController extends GetxController {
     if (videoController.value.isPlaying) {
       isVideoPlaying.value = false;
       videoController.pause();
-      handleSendDataToSocket({
-        "actionType": FilmControllerType.PAUSE.name
-      });
+      handleSendDataToSocket({"actionType": FilmControllerType.PAUSE.name});
     } else {
       isVideoPlaying.value = true;
       videoController.play();
@@ -70,10 +116,8 @@ class FilmController extends GetxController {
   }
 
   void handleSendDataToSocket(Map<String, dynamic> data) {
-    _socketService.sendMessage(EventName.filmSender, {
-      ...data,
-      "roomId": "123456"
-    });
+    _socketService
+        .sendMessage(EventName.filmSender, {...data, "roomId": "123456"});
   }
 
   void sendSeekVideoEvent() {
@@ -90,7 +134,7 @@ class FilmController extends GetxController {
       FilmControllerType actionType = parseFilmType(actionTypeStr);
       final duration = data['data'];
       print('print hello hello hello ${actionTypeStr} ---- ${duration}');
-      switch(actionType) {
+      switch (actionType) {
         case FilmControllerType.PLAY:
           isVideoPlaying.value = true;
           videoController.play();
@@ -108,7 +152,7 @@ class FilmController extends GetxController {
 
   FilmControllerType parseFilmType(String? value) {
     return FilmControllerType.values.firstWhere(
-          (e) => e.name == value,
+      (e) => e.name == value,
       orElse: () => FilmControllerType.PLAY, // Return null if not found
     );
   }
@@ -124,7 +168,7 @@ class FilmController extends GetxController {
   }
 
   Future<void> handleRotateScreen() async {
-    if(isVertical.value) {
+    if (isVertical.value) {
       await rotateLandscape();
     } else {
       SystemChrome.setPreferredOrientations([
@@ -140,8 +184,7 @@ class FilmController extends GetxController {
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
     ]);
-    await SystemChrome.setEnabledSystemUIMode(
-        SystemUiMode.immersiveSticky);
+    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     isVertical.value = false;
   }
 
@@ -152,6 +195,38 @@ class FilmController extends GetxController {
     ]);
     isVertical.value = true;
   }
+
+  Future<void> _initSignaling() async {
+    try {
+      print('Initializing signaling...');
+      signaling = Signaling(userId, peerId);
+      await signaling.init();
+      print('Signaling initialized successfully');
+    } catch (e) {
+      print('Error initializing signaling: $e');
+    }
+  }
+
+  void _handleToggleOpponentMicro() {
+    _socketService.listenToMessages(EventName.turnOnMicro, (data) {
+      bool isTurnOn = data["isTurnOn"];
+      isUser2Speaking.value = isTurnOn;
+    });
+  }
+
+  void _handleSendMircoSignal() {
+    _socketService.sendMessage(EventName.turnOnMicro, {
+      "isTurnOn": isUser1Speaking.value,
+      "from": userId,
+      "to": peerId,
+    });
+  }
+
+  void toggleMicro() {
+    isUser1Speaking.toggle();
+    _handleSendMircoSignal();
+  }
+
   @override
   void dispose() {
     // TODO: implement dispose

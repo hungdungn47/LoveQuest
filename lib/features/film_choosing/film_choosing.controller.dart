@@ -1,11 +1,21 @@
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:get/get.dart';
+import 'package:love_quest/core/config/events.dart';
+import 'package:love_quest/core/config/routes.dart';
+import 'package:love_quest/core/global/global.controller.dart';
+import 'package:love_quest/core/socket/socket_service.dart';
 
 class FilmChoosingController extends GetxController {
-
   RxInt current = 0.obs;
 
-  final CarouselSliderController _carouselSliderController = CarouselSliderController();
+  final CarouselSliderController _carouselSliderController =
+      CarouselSliderController();
+
+  final SocketService _socketService = SocketService();
+
+  final GlobalController _globalController = Get.find<GlobalController>();
+
+  RxBool canChoose = false.obs;
 
   final List<String> _imgList = [
     'https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6ff92caffcdd63681a35134a6770ed3b&auto=format&fit=crop&w=1951&q=80',
@@ -18,10 +28,52 @@ class FilmChoosingController extends GetxController {
 
   List<String> get imgList => _imgList;
 
-  CarouselSliderController get carouselSliderController => _carouselSliderController;
+  CarouselSliderController get carouselSliderController =>
+      _carouselSliderController;
+
+  GlobalController get globalController => _globalController;
+
+  @override
+  void onInit() {
+    // TODO: implement onInit
+    super.onInit();
+
+    handleInit();
+
+    _handleReceiveChoosingFilm();
+  }
+
+  Future<void> handleInit() async {
+    await _socketService.connect();
+    _socketService.sendMessage("joinRoom", "123456");
+    canChoose.value = _globalController.gender.value == 'FEMALE';
+  }
 
   void changeCurrentIndex(int index) {
     current.value = index;
   }
 
+  void handleChoosingFilm() {
+    _socketService.sendMessage(EventName.filmChoosing, {
+      "roomId": "123456",
+      "filmUrl": "1746013420660-purple_heart.mp4",
+      "duration": "1h20m",
+      "filmName": "Purple Heart",
+    });
+  }
+
+  void _handleReceiveChoosingFilm() {
+    _socketService.listenToMessages(EventName.filmChoosing, (data) {
+      print("Choose Film Successfully");
+      final String filmUrl = data["filmUrl"];
+      final String duration = data["duration"];
+      final String filmName = data["filmName"];
+      print('Film Choosed - ${filmUrl} - ${duration} - ${filmName}');
+      Get.toNamed(AppRoutes.film, arguments: {
+        "filmUrl": filmUrl,
+        "duration": duration,
+        "filmName": filmName
+      });
+    });
+  }
 }

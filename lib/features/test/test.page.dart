@@ -16,15 +16,15 @@ class TestPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                  height: 200,
-                  width: 200,
-                  child: Lottie.asset('assets/animations/animation.json')
+                  height: 500,
+                  width: 500,
+                  child: Lottie.asset('assets/animations/loading.json')
               ),
               const SizedBox(height: 20),
               AnimatedTextKit(
                 animatedTexts: [
                   ColorizeAnimatedText(
-                    "Waiting for finding suitable partner",
+                    "Waiting for loading film",
                     textStyle: Styles.mediumTextW700,
                     colors: [
                       Colors.blue,

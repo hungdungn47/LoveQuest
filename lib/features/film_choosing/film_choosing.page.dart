@@ -356,17 +356,27 @@ class FilmChoosingPage extends GetView<FilmChoosingController> {
                                       height: 16,
                                     ),
                                     Center(
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 8, horizontal: 18),
-                                        decoration: BoxDecoration(
-                                            color: AppColors.primary,
-                                            borderRadius:
-                                                BorderRadius.circular(18)),
-                                        child: Text(
-                                          'Watch',
-                                          style: Styles.mediumTextW700
-                                              .copyWith(color: Colors.white),
+                                      child: AbsorbPointer(
+                                        absorbing: !controller.canChoose.value,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            controller.handleChoosingFilm();
+                                          },
+                                          child: Obx(() {
+                                            return Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 8, horizontal: 18),
+                                              decoration: BoxDecoration(
+                                                  color: controller.canChoose.value ? AppColors.primary : Colors.grey,
+                                                  borderRadius:
+                                                  BorderRadius.circular(18)),
+                                              child: Text(
+                                                'Watch',
+                                                style: Styles.mediumTextW700
+                                                    .copyWith(color: Colors.white),
+                                              ),
+                                            );
+                                          })
                                         ),
                                       ),
                                     ),

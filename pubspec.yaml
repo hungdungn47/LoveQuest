@@ -45,6 +45,7 @@ dependencies:
   carousel_slider: ^5.0.0
   lottie: ^3.3.1
   animated_text_kit: ^4.2.3
+  noise_meter: ^5.0.2
 
 dev_dependencies:
   flutter_test:

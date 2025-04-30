@@ -83,7 +83,7 @@ class DrawGameController extends GetxController {
     joinRoom("123456");
     isYourTurn.value = _globalController.gender.value == 'MALE' ? true : false;
     _socketService.sendMessage(EventName.draw_ready, {
-      "userId": "123",
+      "userId": "456",
       "roomId": "123456"
     });
   }
