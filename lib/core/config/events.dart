@@ -8,7 +8,17 @@ class EventName {
   static final String answerResponse = 'answerResponse';
   static final String verifyAnswer = 'verifyAnswer';
   static final String verifyAnswerResponse = 'verifyAnswerResponse';
+  static final String draw_start = 'draw_start';
+  static final String draw_end = 'draw_end';
+  static final String draw_refresh = 'draw_refresh';
+  static final String draw_confirm = 'draw_confirm';
+  static final String draw_submit_question = 'draw_submit_question';
+  static final String draw_ready = 'draw_ready';
   // Film Event
   static final String filmSender = 'filmSender';
   static final String filmReceiver = 'filmReceiver';
+  //Virtual room
+  static final String online = 'online';
+  static final String matching = 'matching';
+  static final String cancel = 'cancel';
 }

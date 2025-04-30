@@ -1,36 +1,54 @@
-import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get/get.dart';
 import 'signaling.dart';
 
 class CallController extends GetxController {
-  final localRenderer = RTCVideoRenderer();
-  final remoteRenderer = RTCVideoRenderer();
   late Signaling signaling;
 
-  final userId = 'userA';
-  final peerId = 'userB';
+  final String userId = 'userA';
+  final String peerId = 'userB';
+
+  final RxBool isMicEnabled = true.obs;
 
   @override
   void onInit() {
     super.onInit();
-    initRenderers();
-    signaling = Signaling(userId, peerId);
-    signaling.init(localRenderer, remoteRenderer);
+    _initSignaling();
   }
 
-  Future<void> initRenderers() async {
-    await localRenderer.initialize();
-    await remoteRenderer.initialize();
+  void toggleMic() {
+    final audioTracks = signaling.localStream.getAudioTracks();
+    if (audioTracks.isNotEmpty) {
+      final enabled = isMicEnabled.value;
+      audioTracks.forEach((track) {
+        track.enabled = !enabled;
+      });
+      isMicEnabled.value = !enabled;
+    }
+  }
+
+  Future<void> _initSignaling() async {
+    try {
+      print('Initializing signaling...');
+      signaling = Signaling(userId, peerId);
+      await signaling.init(); // Không cần renderer nữa
+      print('Signaling initialized successfully');
+    } catch (e) {
+      print('Error initializing signaling: $e');
+    }
   }
 
   void makeCall() {
-    signaling.makeCall();
+    try {
+      print('Making call...');
+      signaling.makeCall();
+      print('Call initiated');
+    } catch (e) {
+      print('Error making call: $e');
+    }
   }
 
   @override
   void onClose() {
-    localRenderer.dispose();
-    remoteRenderer.dispose();
     signaling.dispose();
     super.onClose();
   }

@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:love_quest/core/global/global.controller.dart';
 import 'package:love_quest/core/network/dio_client.dart';
 import 'package:love_quest/features/auth/data/data_sources/remote/user_api_service.dart';
 import 'package:love_quest/features/auth/data/repository/user_repository.dart';
@@ -13,4 +14,6 @@ Future<void> initializeDependencies() async {
   Get.put<LoginUseCase>(LoginUseCase(Get.find<UserRepository>()));
 
   Get.lazyPut(() => AuthController());
+
+  Get.put<GlobalController>(GlobalController());
 }

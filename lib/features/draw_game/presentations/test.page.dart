@@ -11,10 +11,11 @@ class Test extends StatelessWidget {
     return Dialog(
       child: IntrinsicHeight(
         child: Container(
-          width: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.symmetric(horizontal: 12),
+          // width: MediaQuery.of(context).size.width,
           // height: 160,
           decoration: BoxDecoration(
-            color: Colors.blueGrey,
+            color: AppColors.background,
             borderRadius: BorderRadius.circular(18),
           ),
           child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
@@ -27,10 +28,15 @@ class Test extends StatelessWidget {
                     icon: Icon(
                       Icons.close_rounded,
                       size: 32,
-                      color: Colors.white,
+                      color: Colors.black,
                     ))),
-            Text(title,
-                style: Styles.bigTextW800.copyWith(color: Colors.white)),
+            Text(
+              title,
+              style: Styles.mediumTextW500.copyWith(
+                color: Colors.black,
+              ),
+              textAlign: TextAlign.center,
+            ),
             SizedBox(
               height: 28,
             ),
@@ -39,7 +45,7 @@ class Test extends StatelessWidget {
                 Get.back();
               },
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 24),
+                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 32),
                 decoration: BoxDecoration(
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(12)),

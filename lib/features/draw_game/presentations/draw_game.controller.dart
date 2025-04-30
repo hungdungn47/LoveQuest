@@ -6,12 +6,14 @@ import 'package:flutter_painter_v2/flutter_painter.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:love_quest/core/config/events.dart';
+import 'package:love_quest/core/global/global.controller.dart';
 import 'package:love_quest/core/socket/socket_service.dart';
 import 'package:love_quest/extensions/freestyleDrawable.extension.dart';
 import 'package:love_quest/features/draw_game/dto/drawData.dto.dart';
 import 'package:love_quest/features/draw_game/presentations/test.page.dart';
 
 class DrawGameController extends GetxController {
+  final GlobalController _globalController = GlobalController();
   final SocketService _socketService = SocketService();
   final TextEditingController _textEditingController = TextEditingController();
   final Rxn<PainterController> _painterController = Rxn<PainterController>(
@@ -37,17 +39,53 @@ class DrawGameController extends GetxController {
   void onInit() {
     // TODO: implement onInit
     super.onInit();
-    _socketService.connect();
 
-    joinRoom("123456");
+    handleOnInit();
 
-    handleListenAnswerResponse();
+    _handleGameStart();
 
-    handleListenVerifyAnswer();
+    _handleGameRefesh();
+
+    _handleGameEnd();
+
+    // handleListenAnswerResponse();
+
+    // handleListenVerifyAnswer();
+
+    _handleListenVerifyAnswer();
     
     if(!isYourTurn.value) {
       receivedData();
     }
+  }
+
+  Future<void> handleOnInit() async {
+    await _socketService.connect();
+    joinRoom("123456");
+    isYourTurn.value = _globalController.gender.value == 'MALE' ? true : false;
+    _socketService.sendMessage(EventName.draw_ready, {
+      "userId": "123",
+      "roomId": "123456"
+    });
+  }
+  
+  void _handleGameStart() {
+    _socketService.listenToMessages(EventName.draw_start, (data) {
+      print("Game Started");
+    });
+  }
+
+  void _handleGameRefesh() {
+    _socketService.listenToMessages(EventName.draw_refresh, (data) {
+      print("Game refesh");
+      isYourTurn.value = !isYourTurn.value;
+    });
+  }
+
+  void _handleGameEnd() {
+    _socketService.listenToMessages(EventName.draw_end, (data) {
+      print("Game ended");
+    });
   }
   
   void joinRoom(String roomId) {
@@ -65,28 +103,34 @@ class DrawGameController extends GetxController {
     }
   }
 
-  String checkAnswer(String answer) {
-    if(answer == question.value) {
+  String checkAnswer(bool check) {
+    if(check) {
       return "You answered correctly";
     }
     return "You answered wrongly";
   }
 
-  void handleListenAnswerResponse() {
-    _socketService.listenToMessages(EventName.answerResponse, (data) {
-      Get.dialog(Test(title: "The opponent's answer is: $data"));
-      final String message = checkAnswer(data);
-      _socketService.sendMessage(EventName.verifyAnswer, {
-        "message": message,
-        "roomId": "123456"
-      });
-    });
-  }
+  // void handleListenAnswerResponse() {
+  //   _socketService.listenToMessages(EventName.answerResponse, (data) {
+  //     Get.dialog(Test(title: "The opponent's answer is: $data"));
+  //     final String message = checkAnswer(data);
+  //     _socketService.sendMessage(EventName.verifyAnswer, {
+  //       "message": message,
+  //       "roomId": "123456"
+  //     });
+  //   });
+  // }
 
-  void handleListenVerifyAnswer() {
-    _socketService.listenToMessages(EventName.verifyAnswerResponse, (message) {
+  void _handleListenVerifyAnswer() {
+    _socketService.listenToMessages(EventName.draw_confirm, (data) {
       print("verify response");
-      Get.dialog(Test(title: message,));
+      final bool check = data["check"];
+      final String answer = data["answer"];
+      if(isYourTurn.value) {
+        Get.dialog(Test(title: "The opponent's answer is: $answer"));
+      } else {
+        Get.dialog(Test(title: checkAnswer(check),));
+      }
     });
   }
 

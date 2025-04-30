@@ -10,12 +10,17 @@ import 'package:love_quest/features/draw_game/presentations/draw_game.page.dart'
 import 'package:love_quest/features/draw_game/presentations/test.page.dart';
 import 'package:love_quest/features/film/film.bindings.dart';
 import 'package:love_quest/features/film/film.page.dart';
+import 'package:love_quest/features/film_choosing/film_choosing.bindings.dart';
+import 'package:love_quest/features/film_choosing/film_choosing.page.dart';
 import 'package:love_quest/features/home/presentation/home.binding.dart';
 import 'package:love_quest/features/home/presentation/home.page.dart';
 import 'package:love_quest/features/profile/presentations/profile.binding.dart';
 import 'package:love_quest/features/profile/presentations/profile.page.dart';
+import 'package:love_quest/features/test/test.binding.dart';
 import 'package:love_quest/features/video_call/call_binding.dart';
 import 'package:love_quest/features/video_call/call_page.dart';
+
+import '../../features/test/test.page.dart';
 
 class AppRoutes {
   static const String signup = '/signup';
@@ -28,7 +33,9 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String draw_game = '/draw_game_test';
   static const String film = '/film';
+  static const String filmChoosing = '/filmChoosing';
   static const String call_vid = '/call_vid';
+  static const String test = '/test';
 
   static final routes = [
     GetPage(name: signup, page: () => SignupScreen()),
@@ -59,9 +66,19 @@ class AppRoutes {
       binding: FilmBindings(),
     ),
     GetPage(
+      name: filmChoosing,
+      page: () => FilmChoosingPage(),
+      binding: FilmChoosingBindings(),
+    ),
+    GetPage(
       name: call_vid,
       page: () => CallPage(),
       binding: CallBinding(),
+    ),
+    GetPage(
+      name: test,
+      page: () => TestPage(),
+      binding: TestBindings(),
     ),
   ];
 }
