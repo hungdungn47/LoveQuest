@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:love_quest/core/config/events.dart';
 import 'package:love_quest/core/global/global.controller.dart';
 import 'package:love_quest/core/socket/socket_service.dart';
+import 'package:noise_meter/noise_meter.dart';
 import 'package:video_player/video_player.dart';
 
 import '../video_call/signaling.dart';
@@ -12,6 +13,8 @@ import 'enum/index.dart';
 
 class FilmController extends GetxController {
   late VideoPlayerController _videoController;
+  RxBool isMic1On = false.obs;
+  RxBool isMic2On = false.obs;
   RxBool isVideoInitialized = false.obs;
   RxBool isVideoPlaying = false.obs;
   RxBool isVertical = true.obs;
@@ -60,15 +63,16 @@ class FilmController extends GetxController {
     final String duration = data["duration"];
     filmName.value = data["filmName"];
     _videoController = VideoPlayerController.networkUrl(Uri.parse(
-        'https://d811-14-191-138-195.ngrok-free.app/upload/stream/1746013420660-purple_heart.mp4'));
+        'https://6f08-14-191-138-195.ngrok-free.app/upload/stream/fixed_purple_heart.mp4'))
+      ..setVolume(1);
     _videoController.initialize().then((_) {
       isVideoInitialized.value = true;
     });
 
-    Timer.periodic(Duration(seconds: 3), (timer) {
-      isUser1Speaking.value = !isUser1Speaking.value;
-      isUser2Speaking.value = !isUser1Speaking.value;
-    });
+    // Timer.periodic(Duration(seconds: 3), (timer) {
+    //   isUser1Speaking.value = !isUser1Speaking.value;
+    //   isUser2Speaking.value = !isUser1Speaking.value;
+    // });
 
     rotatePortrait();
 
@@ -76,11 +80,46 @@ class FilmController extends GetxController {
 
     _handleToggleOpponentMicro();
 
+    noiseAnalyst();
+
+
+
     await _initSignaling();
 
-    if(_globalController.gender.value == "MALE") {
+    if (_globalController.gender.value == "MALE") {
       makeCall();
     }
+  }
+
+  void receiveOpponentSpeaking() {
+    _socketService.listenToMessages(EventName.isSpeaking, (data) {
+      final bool isSpeak = data["isSpeaking"];
+      isUser2Speaking.value = isSpeak;
+    });
+  }
+
+  void noiseAnalyst() {
+    NoiseMeter().noise.listen(
+          (NoiseReading noiseReading) {
+        if (noiseReading.meanDecibel > 60) {
+          isUser1Speaking.value = true;
+        } else {
+          isUser1Speaking.value = false;
+        }
+        sendSpeakingSignal(isUser1Speaking.value);
+        print('Noise: ${noiseReading.meanDecibel} dB');
+        print('Max amp: ${noiseReading.maxDecibel} dB');
+      },
+      onError: (Object error) {
+        print(error);
+      },
+      cancelOnError: true,
+    );
+  }
+
+  void sendSpeakingSignal(bool isSpeaking) {
+    _socketService.sendMessage(EventName.isSpeaking,
+        {"from": userId, "to": peerId, "isSpeaking": isSpeaking});
   }
 
   void makeCall() {
@@ -210,20 +249,20 @@ class FilmController extends GetxController {
   void _handleToggleOpponentMicro() {
     _socketService.listenToMessages(EventName.turnOnMicro, (data) {
       bool isTurnOn = data["isTurnOn"];
-      isUser2Speaking.value = isTurnOn;
+      isMic2On.value = isTurnOn;
     });
   }
 
   void _handleSendMircoSignal() {
     _socketService.sendMessage(EventName.turnOnMicro, {
-      "isTurnOn": isUser1Speaking.value,
+      "isTurnOn": isMic1On.value,
       "from": userId,
       "to": peerId,
     });
   }
 
   void toggleMicro() {
-    isUser1Speaking.toggle();
+    isMic1On.toggle();
     _handleSendMircoSignal();
   }
 

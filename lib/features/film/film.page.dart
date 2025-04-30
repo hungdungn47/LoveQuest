@@ -145,7 +145,7 @@ class FilmPage extends GetView<FilmController> {
                                           SizedBox(width: 18),
                                           IconButton(
                                             icon: Icon(
-                                              controller.isUser1Speaking.value
+                                              controller.isMic1On.value
                                                   ? Icons.mic_rounded
                                                   : Icons.mic_off_rounded,
                                               size: 36,
@@ -225,7 +225,7 @@ class FilmPage extends GetView<FilmController> {
                                   left: 0,
                                   right: 0,
                                   child: Icon(
-                                    controller.isUser1Speaking.value ? Icons.mic_rounded : Icons.mic_off_rounded,
+                                    controller.isMic1On.value ? Icons.mic_rounded : Icons.mic_off_rounded,
                                     size: 32,
                                     color: Colors
                                         .black, // tùy bạn, có thể thêm background tròn
@@ -273,7 +273,7 @@ class FilmPage extends GetView<FilmController> {
                                   left: 0,
                                   right: 0,
                                   child: Icon(
-                                    controller.isUser2Speaking.value ? Icons.mic_rounded : Icons.mic_off_rounded,
+                                    controller.isMic2On.value ? Icons.mic_rounded : Icons.mic_off_rounded,
                                     size: 32,
                                     color: Colors
                                         .black, // tùy bạn, có thể thêm background tròn

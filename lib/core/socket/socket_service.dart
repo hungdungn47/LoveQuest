@@ -13,8 +13,8 @@ class SocketService {
     try {
       print('Attempting to connect to socket server...');
       socket = IO.io(
-          'ws://10.0.2.2:3000',
-          // 'wss://1822-14-191-138-195.ngrok-free.app',
+          // 'ws://10.0.2.2:3000',
+          'wss://6f08-14-191-138-195.ngrok-free.app',
           IO.OptionBuilder()
               .setTransports(['websocket']) // Set transport to WebSocket
               .disableAutoConnect() // Prevent auto-connection

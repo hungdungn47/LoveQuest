@@ -46,6 +46,7 @@ dependencies:
   lottie: ^3.3.1
   animated_text_kit: ^4.2.3
   noise_meter: ^5.0.2
+  better_player: ^0.0.84
 
 dev_dependencies:
   flutter_test:

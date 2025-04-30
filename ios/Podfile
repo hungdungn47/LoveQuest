@@ -39,9 +39,15 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
-     target.build_configurations.each do |config|
+
+    target.build_configurations.each do |config|
       # Workaround for https://github.com/flutter/flutter/issues/64502
-      config.build_settings['ONLY_ACTIVE_ARCH'] = 'YES' # <= this line
-     end
+      config.build_settings['ONLY_ACTIVE_ARCH'] = 'YES'
+
+      # For more information:
+      # https://github.com/BaseflowIT/flutter-permission-handler/blob/master/permission_handler/ios/Classes/PermissionHandlerEnums.h
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'PERMISSION_MICROPHONE=1'
+    end
   end
 end
