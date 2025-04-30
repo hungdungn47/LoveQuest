@@ -115,6 +115,10 @@ class DrawGameController extends GetxController {
         "roomId": "123456",
       });
     } else {
+      _socketService.sendMessage(EventName.draw_submit_question, {
+        "roomId": "123456",
+        "question": _textEditingController.text
+      });
       question.value = _textEditingController.text;
     }
   }
