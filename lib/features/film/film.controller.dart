@@ -263,7 +263,14 @@ class FilmController extends GetxController {
   }
 
   void toggleMicro() {
-    isMic1On.toggle();
+    final audioTracks = signaling.localStream.getAudioTracks();
+    if (audioTracks.isNotEmpty) {
+      final enabled = isMic1On.value;
+      audioTracks.forEach((track) {
+        track.enabled = !enabled;
+      });
+      isMic1On.value = !enabled;
+    }
     _handleSendMircoSignal();
   }
 
