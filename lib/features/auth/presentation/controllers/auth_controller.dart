@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:love_quest/core/config/routes.dart';
 import 'package:love_quest/core/resources/data_state.dart';
+import 'package:love_quest/core/storage/local_storage.dart';
 import 'package:love_quest/features/auth/domain/entities/user.dart';
 import 'package:love_quest/features/auth/domain/usecases/signup.dart';
 import 'package:love_quest/features/auth/domain/usecases/login.dart';
+import 'package:logger/logger.dart';
 
 class AuthController extends GetxController {
   final Rx<UserEntity> user = UserEntity().obs;
@@ -17,6 +19,8 @@ class AuthController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxString selectedGender = ''.obs;
   final RxList<String> selectedInterests = <String>[].obs;
+
+  var logger = Logger();
 
   void signup() async {
     if (usernameController.text.isEmpty ||
@@ -76,11 +80,17 @@ class AuthController extends GetxController {
         password: passwordController.text,
       ));
 
-      print('Controller: Login result: $result');
+      logger.i('Controller: Login result: ${result.data}');
+      logger.i('Access token saved: ${LocalStorage().readData('accessToken')}');
 
+      final userData = result.data?['user'];
       if (result is DataSuccess) {
         user.value = UserEntity(
-          email: emailController.text,
+          email: userData['email'] ?? emailController.text,
+          nickName: userData['userName'] ?? '',
+          fullName: userData['fullName'] ?? '',
+          id: userData['_id'] ?? '',
+          avatar: userData['avatar'] ?? '',
         );
         Get.offAllNamed(AppRoutes.home);
       } else if (result is DataFailed) {
