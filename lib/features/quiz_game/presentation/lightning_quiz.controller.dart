@@ -66,6 +66,7 @@ class LightningQuizController extends GetxController {
 
     _socketService.listenToMessages('qa_questionSender', (data) {
       submitAnswer();
+      startTimer();
       logger.i('Received question $data');
       QuizEntity newQuiz = QuizEntity(
         question: data['question'],
@@ -86,7 +87,6 @@ class LightningQuizController extends GetxController {
   void onInit() {
     super.onInit();
     _initializeGameSocket();
-    startTimer();
   }
 
   void startTimer() {
@@ -123,6 +123,7 @@ class LightningQuizController extends GetxController {
       'gameId': gameId.value,
       'answer': selectedOption.value
     });
+    selectedOption.value = '';
   }
 
   void moveToNextQuestion() {
@@ -133,7 +134,7 @@ class LightningQuizController extends GetxController {
     }
     // currentQuizIndex++;
     if (currentQuizIndex.value < quizList.length) {
-      startTimer();
+      // startTimer();
     } else {
       _timer?.cancel();
       remainingTime.value = 0;
