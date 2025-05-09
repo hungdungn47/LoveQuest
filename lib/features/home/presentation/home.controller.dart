@@ -22,8 +22,12 @@ class HomeController extends GetxController {
   void onInit() {
     // TODO: implement onInit
     super.onInit();
-    _socketService.connect();
+  }
 
+  Future<void> handleInit() async {
+    await _socketService.connect();
+    _socketService.sendMessage('register', {'userId': _authController.user.value.id});
+    _socketService.sendMessage('online', {"userId": _authController.user.value.id, "gender": _authController.user.value.gender});
     listenMatchingEvent();
   }
 
@@ -56,6 +60,7 @@ class HomeController extends GetxController {
 
   void handleFindPartner() {
     isLoading.value = true;
+    print("Gender is ${_authController.user.value.gender}");
     _socketService.sendMessage(EventName.matching, {
       "userId": _authController.user.value.id,
       "gender": _authController.user.value.gender,
@@ -72,7 +77,7 @@ class HomeController extends GetxController {
       String roomId = data["roomId"];
       isLoading.value = false;
       _globalController.roomId.value = roomId;
-      _joinRoom(roomId);
+      // _joinRoom(roomId);
     });
   }
 

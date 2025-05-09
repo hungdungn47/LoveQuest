@@ -48,9 +48,6 @@ class SocketService {
           isConnected = true;
 
           _onConnectCallback?.call();
-
-          sendMessage('register', {'userId': "userA"});
-          sendMessage('online', {"userId": "456", "gender": "MALE"});
         } else {
           print('Already marked as connected, skipping re-register.');
         }

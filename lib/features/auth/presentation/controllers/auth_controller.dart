@@ -113,6 +113,7 @@ class AuthController extends GetxController {
           fullName: userData['fullName'] ?? '',
           id: userData['_id'] ?? '',
           avatar: userData['avatar'] ?? '',
+          gender: userData['gender'] ?? '',
         );
         Get.offAllNamed(AppRoutes.home);
       } else if (result is DataFailed) {
