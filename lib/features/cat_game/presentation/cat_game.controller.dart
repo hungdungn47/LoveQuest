@@ -76,6 +76,12 @@ class CatGameController extends GetxController
         } else {
           blackPoints.value += data['point'] as int;
         }
+      } else {
+        if(role.value == 'orange') {
+          blackPoints.value += data['point'] as int;
+        } else {
+          orangePoints.value += data['point'] as int;
+        }
       }
       if (orangePoints.value >= 3 || blackPoints.value >= 3) {
         onWin();

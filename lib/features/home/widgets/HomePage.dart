@@ -137,7 +137,7 @@ class HomePageView extends StatelessWidget {
 
                   // Quay lại màn hình chính khi tìm được đối thủ
                   Navigator.pop(context);
-                  Get.toNamed(AppRoutes.quiz_game);
+                  Get.toNamed(AppRoutes.cat_game);
                 },
                 child: Container(
                   padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
