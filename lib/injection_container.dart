@@ -3,11 +3,12 @@ import 'package:love_quest/core/network/dio_client.dart';
 import 'package:love_quest/features/auth/data/data_sources/remote/user_api_service.dart';
 import 'package:love_quest/features/auth/data/repository/user_repository.dart';
 import 'package:love_quest/features/auth/domain/repository/user_repository.dart';
-import 'package:love_quest/features/auth/domain/usecases/get_profile.dart';
 import 'package:love_quest/features/auth/domain/usecases/login.dart';
-import 'package:love_quest/features/auth/domain/usecases/signup.dart';
 import 'package:love_quest/features/auth/presentation/controllers/auth_controller.dart';
-// import 'package:love_quest/features/cat_game/presentation/cat_game.controller.dart';
+
+import 'core/global/global.controller.dart';
+import 'features/auth/domain/usecases/get_profile.dart';
+import 'features/auth/domain/usecases/signup.dart';
 
 Future<void> initializeDependencies() async {
   final dioClient = DioClient.instance;
@@ -23,7 +24,6 @@ Future<void> initializeDependencies() async {
   Get.put<LoginUseCase>(LoginUseCase(Get.find<UserRepository>()));
   Get.put<SignupUseCase>(SignupUseCase(Get.find<UserRepository>()));
   Get.put<GetProfileUseCase>(GetProfileUseCase(Get.find<UserRepository>()));
-
-  Get.put(AuthController());
-  // Get.put(CatGameController());
+  Get.lazyPut(() => AuthController());
+  Get.put<GlobalController>(GlobalController());
 }

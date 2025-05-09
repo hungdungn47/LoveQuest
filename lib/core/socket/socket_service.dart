@@ -33,8 +33,8 @@ class SocketService {
       }
       print('Attempting to connect to socket server...');
       socket = IO.io(
-          // 'ws://10.0.2.2:3000',
-          'ws://192.168.1.3:3000',
+        'ws://10.0.2.2:3000',
+        //   'ws://10.0',
           IO.OptionBuilder()
               .setTransports(['websocket']) // Set transport to WebSocket
               .disableAutoConnect() // Prevent auto-connection
