@@ -11,12 +11,14 @@ import 'package:love_quest/core/config/routes.dart';
 import 'package:love_quest/core/global/global.controller.dart';
 import 'package:love_quest/core/socket/socket_service.dart';
 import 'package:love_quest/extensions/freestyleDrawable.extension.dart';
+import 'package:love_quest/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:love_quest/features/draw_game/dto/drawData.dto.dart';
 import 'package:love_quest/features/draw_game/presentations/test.page.dart';
 
 class DrawGameController extends GetxController {
   final GlobalController _globalController = GlobalController();
   final SocketService _socketService = SocketService();
+  final AuthController _authController = Get.find<AuthController>();
   final TextEditingController _textEditingController = TextEditingController();
   final Rxn<PainterController> _painterController = Rxn<PainterController>(
       PainterController(
@@ -80,11 +82,14 @@ class DrawGameController extends GetxController {
 
   Future<void> handleOnInit() async {
     await _socketService.connect();
-    joinRoom("123456");
-    isYourTurn.value = _globalController.gender.value == 'MALE' ? true : false;
+    // isYourTurn.value = _globalController.gender.value == 'MALE' ? true : false;
+    isYourTurn.value = _authController.user.value.gender == 'MALE' ? true : false;
     _socketService.sendMessage(EventName.draw_ready, {
-      "userId": "456",
-      "roomId": "123456"
+      "userId": _authController.user.value.id,
+      "gender": _authController.user.value.gender,
+      "roomId": _globalController.roomId.value,
+      // "userId": "456",
+      // "roomId": "123456"
     });
   }
   
@@ -117,21 +122,19 @@ class DrawGameController extends GetxController {
       Get.toNamed(AppRoutes.filmChoosing);
     });
   }
-  
-  void joinRoom(String roomId) {
-    _socketService.sendMessage(EventName.joinRoom, roomId);
-  }
 
   void handleSubmit() {
     if(!isYourTurn.value) {
       _socketService.sendMessage(EventName.answer, {
         "answer": _textEditingController.text,
-        "roomId": "123456",
+        // "roomId": "123456",
+        "roomId": _globalController.roomId.value,
       });
     } else {
       _socketService.sendMessage(EventName.draw_submit_question, {
-        "roomId": "123456",
-        "question": _textEditingController.text
+        // "roomId": "123456",
+        "question": _textEditingController.text,
+        "roomId": _globalController.roomId.value,
       });
       question.value = _textEditingController.text;
     }
@@ -163,8 +166,10 @@ class DrawGameController extends GetxController {
       final lastDrawable = _painterController.value!.drawables.last;
 
       if (lastDrawable is FreeStyleDrawable) {
+        // Map<String, String> data = DrawDataDto(
+        //     data: lastDrawable, roomId: "123456").toMap();
         Map<String, String> data = DrawDataDto(
-            data: lastDrawable, roomId: "123456").toMap();
+            data: lastDrawable, roomId: _globalController.roomId.value).toMap();
         _socketService.sendMessage('draw', data);
       }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:love_quest/core/global/global.controller.dart';
 import 'package:love_quest/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:love_quest/core/config/events.dart';
 import 'package:love_quest/core/socket/socket_service.dart';
@@ -9,6 +10,8 @@ class HomeController extends GetxController {
   final SocketService _socketService = SocketService();
   final PersistentTabController _persistentTabController = PersistentTabController(initialIndex: 0);
   final PageController _pageController = PageController();
+  final AuthController _authController = Get.find<AuthController>();
+  final GlobalController _globalController = Get.find<GlobalController>();
   PageController get pageController => _pageController;
   PersistentTabController get persistentTabController =>
       _persistentTabController;
@@ -23,9 +26,6 @@ class HomeController extends GetxController {
 
     listenMatchingEvent();
   }
-
-
-  final AuthController _authController = Get.find<AuthController>();
 
   void updateCurrentIndex(int val) {
     currentIndex.value = val;
@@ -57,8 +57,10 @@ class HomeController extends GetxController {
   void handleFindPartner() {
     isLoading.value = true;
     _socketService.sendMessage(EventName.matching, {
-      "userId": "456",
-      "gender": "MALE",
+      "userId": _authController.user.value.id,
+      "gender": _authController.user.value.gender,
+      // "userId": "456",
+      // "gender": "MALE",
     });
   }
 
@@ -67,15 +69,24 @@ class HomeController extends GetxController {
     _socketService.listenToMessages(EventName.matching, (data) {
       print("Hello");
       print(data["roomId"]);
+      String roomId = data["roomId"];
       isLoading.value = false;
+      _globalController.roomId.value = roomId;
+      _joinRoom(roomId);
     });
   }
 
   void handleCancelMatching() {
     isLoading.value = false;
     _socketService.sendMessage(EventName.cancel, {
-      "userId": "456",
-      "gender": "MALE",
+      "userId": _authController.user.value.id,
+      "gender": _authController.user.value.gender,
+      // "userId": "456",
+      // "gender": "MALE",
     });
+  }
+
+  void _joinRoom(String roomId) {
+    _socketService.sendMessage(EventName.joinRoom, roomId);
   }
 }

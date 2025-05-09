@@ -4,6 +4,7 @@ import 'package:love_quest/core/config/events.dart';
 import 'package:love_quest/core/config/routes.dart';
 import 'package:love_quest/core/global/global.controller.dart';
 import 'package:love_quest/core/socket/socket_service.dart';
+import 'package:love_quest/features/auth/presentation/controllers/auth_controller.dart';
 
 class FilmChoosingController extends GetxController {
   RxInt current = 0.obs;
@@ -14,6 +15,8 @@ class FilmChoosingController extends GetxController {
   final SocketService _socketService = SocketService();
 
   final GlobalController _globalController = Get.find<GlobalController>();
+
+  final AuthController _authController = Get.find<AuthController>();
 
   RxBool canChoose = false.obs;
 
@@ -46,7 +49,8 @@ class FilmChoosingController extends GetxController {
   Future<void> handleInit() async {
     await _socketService.connect();
     _socketService.sendMessage("joinRoom", "123456");
-    canChoose.value = _globalController.gender.value == 'FEMALE';
+    // canChoose.value = _globalController.gender.value == 'FEMALE';
+    canChoose.value = _authController.user.value.gender == 'FEMALE';
   }
 
   void changeCurrentIndex(int index) {
@@ -55,7 +59,8 @@ class FilmChoosingController extends GetxController {
 
   void handleChoosingFilm() {
     _socketService.sendMessage(EventName.filmChoosing, {
-      "roomId": "123456",
+      // "roomId": "123456",
+      "roomId": _globalController.roomId.value,
       "filmUrl": "1746013420660-purple_heart.mp4",
       "duration": "1h20m",
       "filmName": "Purple Heart",

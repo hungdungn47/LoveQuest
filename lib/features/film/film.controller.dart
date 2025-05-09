@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:love_quest/core/config/events.dart';
 import 'package:love_quest/core/global/global.controller.dart';
 import 'package:love_quest/core/socket/socket_service.dart';
+import 'package:love_quest/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:noise_meter/noise_meter.dart';
 import 'package:video_player/video_player.dart';
 
@@ -22,13 +23,14 @@ class FilmController extends GetxController {
   Timer? timer;
   final SocketService _socketService = SocketService();
   final GlobalController _globalController = Get.find<GlobalController>();
+  final AuthController _authController = Get.find<AuthController>();
   var isUser1Speaking = false.obs;
   var isUser2Speaking = false.obs;
   RxString filmName = ''.obs;
   late Signaling signaling;
 
-  final String userId = 'userA';
-  final String peerId = 'userB';
+  late final String userId;
+  late final String peerId;
 
   @override
   void onInit() {
@@ -58,6 +60,8 @@ class FilmController extends GetxController {
   }
 
   Future<void> handleInit() async {
+    userId = _authController.user.value.id!;
+    peerId = _globalController.peerId.value;
     final data = Get.arguments;
     final String filmUrl = data["filmUrl"];
     final String duration = data["duration"];
@@ -86,9 +90,13 @@ class FilmController extends GetxController {
 
     await _initSignaling();
 
-    if (_globalController.gender.value == "MALE") {
+    if (_authController.user.value.gender == "MALE") {
       makeCall();
     }
+
+    // if (_globalController.gender.value == "MALE") {
+    //   makeCall();
+    // }
   }
 
   void receiveOpponentSpeaking() {
@@ -156,7 +164,7 @@ class FilmController extends GetxController {
 
   void handleSendDataToSocket(Map<String, dynamic> data) {
     _socketService
-        .sendMessage(EventName.filmSender, {...data, "roomId": "123456"});
+        .sendMessage(EventName.filmSender, {...data, "roomId": _globalController.roomId.value});
   }
 
   void sendSeekVideoEvent() {

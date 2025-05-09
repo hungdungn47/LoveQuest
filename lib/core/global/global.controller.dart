@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 
+import '../../features/auth/domain/entities/user.dart';
+
 class GlobalController {
-  RxString userId = ''.obs;
-  RxString gender = 'MALE'.obs;
+  final RxString peerId = ''.obs;
+  final RxString roomId = ''.obs;
 }
