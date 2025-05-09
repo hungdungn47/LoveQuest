@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:love_quest/core/config/routes.dart';
 import 'package:love_quest/core/global/global.controller.dart';
 import 'package:love_quest/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:love_quest/core/config/events.dart';
@@ -22,6 +23,7 @@ class HomeController extends GetxController {
   void onInit() {
     // TODO: implement onInit
     super.onInit();
+    handleInit();
   }
 
   Future<void> handleInit() async {
@@ -77,6 +79,7 @@ class HomeController extends GetxController {
       String roomId = data["roomId"];
       isLoading.value = false;
       _globalController.roomId.value = roomId;
+      Get.toNamed(AppRoutes.cat_game);
       // _joinRoom(roomId);
     });
   }
@@ -89,9 +92,5 @@ class HomeController extends GetxController {
       // "userId": "456",
       // "gender": "MALE",
     });
-  }
-
-  void _joinRoom(String roomId) {
-    _socketService.sendMessage(EventName.joinRoom, roomId);
   }
 }

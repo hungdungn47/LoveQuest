@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:love_quest/core/global/global.controller.dart';
 import 'package:love_quest/core/socket/socket_service.dart';
 import 'package:logger/logger.dart';
 // import 'package:love_quest/features/auth/domain/entities/user.dart';
@@ -26,6 +27,7 @@ class CatGameController extends GetxController
   final RxString role = ''.obs;
 
   final AudioPlayer audioPlayer = AudioPlayer();
+  final GlobalController globalController = Get.find<GlobalController>();
 
   final SocketService _socketService = SocketService();
 
@@ -43,7 +45,7 @@ class CatGameController extends GetxController
 
     // Send the ready message AFTER connection is established
     _socketService.sendMessage(
-        'fish_hunter_ready', {'roomId': 'cat_game', 'userId': '123'});
+        'fish_hunter_ready', {'roomId': globalController.roomId.value, 'userId': _authController.user.value.id});
 
     // Now listen to events
     _socketService.listenToMessages('fish_hunter_assigned', (data) {
@@ -104,7 +106,7 @@ class CatGameController extends GetxController
       winner = 'Orange cat';
     }
     _socketService.sendMessage('fish_hunter_gameOver', {
-      "roomId": 'cat_game',
+      "roomId": globalController.roomId.value,
       "clientId": clientId.value,
     });
   }

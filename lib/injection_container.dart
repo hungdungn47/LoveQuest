@@ -13,7 +13,7 @@ import 'features/auth/domain/usecases/signup.dart';
 Future<void> initializeDependencies() async {
   final dioClient = DioClient.instance;
   dioClient.configureDio(
-    baseUrl: 'http://10.0.2.2:3000/api',
+    baseUrl: 'https://95dd-2001-ee0-4a6d-45b0-9d5e-2096-bf2a-cbe.ngrok-free.app/api',
     defaultHeaders: {
       'Content-Type': 'application/json',
     },
@@ -24,6 +24,6 @@ Future<void> initializeDependencies() async {
   Get.put<LoginUseCase>(LoginUseCase(Get.find<UserRepository>()));
   Get.put<SignupUseCase>(SignupUseCase(Get.find<UserRepository>()));
   Get.put<GetProfileUseCase>(GetProfileUseCase(Get.find<UserRepository>()));
-  Get.lazyPut(() => AuthController());
+  Get.put(AuthController());
   Get.put<GlobalController>(GlobalController());
 }
