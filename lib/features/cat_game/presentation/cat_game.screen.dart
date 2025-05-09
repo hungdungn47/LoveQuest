@@ -1,169 +1,24 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:love_quest/core/config/routes.dart';
 import 'package:love_quest/core/config/theme.dart';
-import 'dart:async';
-import 'dart:math';
-import 'package:audioplayers/audioplayers.dart';
-import 'package:love_quest/features/quiz_game/presentation/lightning_quiz.screen.dart';
-import 'package:get/get.dart';
-import 'package:love_quest/features/quiz_game/presentation/lightning_quiz.binding.dart';
-import 'package:flutter/cupertino.dart';
+import 'cat_game.controller.dart';
 
-class CatGameScreen extends StatefulWidget {
+class CatGameScreen extends GetView<CatGameController> {
   const CatGameScreen({super.key});
 
-  @override
-  State<CatGameScreen> createState() => _CatGameScreenState();
-}
-
-class _CatGameScreenState extends State<CatGameScreen>
-    with TickerProviderStateMixin {
-  late AnimationController _orangeController;
-  late AnimationController _blackController;
-  late Animation<Offset> _orangeAnimation;
-  late Animation<Offset> _blackAnimation;
-  bool _isFoodVisible = false;
-  bool _isGoodFood = true; // true for good food, false for bad food
-  int _orangePoints = 0;
-  int _blackPoints = 0;
-  bool _isAnimating = false;
-  Timer? _foodTimer;
-  Timer? _hideTimer;
-  final AudioPlayer _audioPlayer = AudioPlayer();
-
-  @override
-  void initState() {
-    super.initState();
-    _orangeController = AnimationController(
-      duration: const Duration(milliseconds: 100),
-      vsync: this,
-    );
-
-    _blackController = AnimationController(
-      duration: const Duration(milliseconds: 100),
-      vsync: this,
-    );
-
-    _orangeAnimation = Tween<Offset>(
-      begin: const Offset(0, 0),
-      end: const Offset(0, -0.6),
-    ).animate(CurvedAnimation(
-      parent: _orangeController,
-      curve: Curves.linear,
-    ));
-
-    _blackAnimation = Tween<Offset>(
-      begin: const Offset(0, 0),
-      end: const Offset(0, 0.6),
-    ).animate(CurvedAnimation(
-      parent: _blackController,
-      curve: Curves.linear,
-    ));
-
-    _startFoodCycle();
-  }
-
-  void _startFoodCycle() {
-    _foodTimer = Timer.periodic(const Duration(seconds: 4), (timer) {
-      setState(() {
-        _isFoodVisible = true;
-        _isGoodFood = Random().nextBool(); // Randomly choose food type
-      });
-
-      _hideTimer = Timer(const Duration(seconds: 1), () {
-        if (mounted) {
-          setState(() {
-            _isFoodVisible = false;
-          });
-        }
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _orangeController.dispose();
-    _blackController.dispose();
-    _foodTimer?.cancel();
-    _hideTimer?.cancel();
-    _audioPlayer.dispose();
-    super.dispose();
-  }
-
-  Future<void> _playSound(bool isGoodFood) async {
-    try {
-      await _audioPlayer.play(
-        AssetSource('sfx/${isGoodFood ? 'correct' : 'wrong'}.wav'),
-      );
-    } catch (e) {
-      print('Error playing sound: $e');
-    }
-  }
-
-  void _animateOrangeCat() {
-    if (_isAnimating) return;
-    _isAnimating = true;
-
-    _orangeController.forward().then((_) {
-      if (_isFoodVisible) {
-        setState(() {
-          _isFoodVisible = false;
-          _orangePoints += _isGoodFood ? 1 : -2;
-          if (_orangePoints >= 3) {
-            _showWinnerDialog('Orange Cat');
-          }
-        });
-        _playSound(_isGoodFood);
-      }
-      Future.delayed(const Duration(milliseconds: 50), () {
-        _orangeController.reverse().then((_) {
-          _isAnimating = false;
-        });
-      });
-    });
-  }
-
-  void _animateBlackCat() {
-    if (_isAnimating) return;
-    _isAnimating = true;
-
-    _blackController.forward().then((_) {
-      if (_isFoodVisible) {
-        setState(() {
-          _isFoodVisible = false;
-          _blackPoints += _isGoodFood ? 1 : -2;
-          if (_blackPoints >= 3) {
-            _showWinnerDialog('Black Cat');
-          }
-        });
-        _playSound(_isGoodFood);
-      }
-      Future.delayed(const Duration(milliseconds: 50), () {
-        _blackController.reverse().then((_) {
-          _isAnimating = false;
-        });
-      });
-    });
-  }
-
   void _showWinnerDialog(String winner) {
-    showDialog(
-      context: context,
+    Get.defaultDialog(
+      title: 'Congratulations! 🎉',
+      middleText: '$winner wins the game!',
       barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Congratulations! 🎉'),
-          content: Text('$winner wins the game!'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Get.offAndToNamed(AppRoutes.quiz_game);
-              },
-              child: const Text('Next Game'),
-            ),
-          ],
-        );
-      },
+      confirm: TextButton(
+        onPressed: () => Get.offAndToNamed(AppRoutes.quiz_game),
+        child: const Text('Next Game'),
+      ),
     );
   }
 
@@ -179,7 +34,7 @@ class _CatGameScreenState extends State<CatGameScreen>
           icon: const Icon(CupertinoIcons.back, color: Colors.white),
           onPressed: () => Get.back(),
         ),
-        title: Text(
+        title: const Text(
           'LoveQuest',
           style: TextStyle(
             fontSize: 28,
@@ -193,18 +48,16 @@ class _CatGameScreenState extends State<CatGameScreen>
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
-            child: Row(
-              children: [
-                Text(
-                  '🖤 $_blackPoints',
-                  style: const TextStyle(fontSize: 20),
-                ),
-                const SizedBox(width: 16),
-                Text(
-                  '🧡 $_orangePoints',
-                  style: const TextStyle(fontSize: 20),
-                ),
-              ],
+            child: Obx(
+              () => Row(
+                children: [
+                  Text('🖤 ${controller.blackPoints.value}',
+                      style: const TextStyle(fontSize: 20)),
+                  const SizedBox(width: 16),
+                  Text('🧡 ${controller.orangePoints.value}',
+                      style: const TextStyle(fontSize: 20)),
+                ],
+              ),
             ),
           ),
         ],
@@ -218,26 +71,28 @@ class _CatGameScreenState extends State<CatGameScreen>
         ),
         child: Stack(
           children: [
-            // Food in the exact center
-            if (_isFoodVisible)
-              Positioned(
-                top: foodCenterY - 80,
-                left: screenWidth / 2 - 50,
-                child: Image.asset(
-                  _isGoodFood
-                      ? 'assets/game-art/food.png'
-                      : 'assets/game-art/fish-bone.png',
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.contain,
-                ),
+            // Food in center
+            Obx(() => controller.isFoodVisible.value
+                ? Positioned(
+              top: foodCenterY - 80,
+              left: screenWidth / 2 - 50,
+              child: Image.asset(
+                controller.isGoodFood.value
+                    ? 'assets/game-art/food.png'
+                    : 'assets/game-art/fish-bone.png',
+                width: 100,
+                height: 100,
+                fit: BoxFit.contain,
               ),
-            // Black cat paw centered
+            )
+                : Container()),
+
+            // Black cat paw
             Positioned(
               top: 50,
               left: screenWidth / 2 - 100,
               child: SlideTransition(
-                position: _blackAnimation,
+                position: controller.blackAnimation,
                 child: Transform.rotate(
                   angle: 3.14,
                   child: Image.asset(
@@ -249,41 +104,13 @@ class _CatGameScreenState extends State<CatGameScreen>
                 ),
               ),
             ),
-            // Black button positioned relative to black paw
-            Positioned(
-              top: 50 + 100, // 100 from top + half of paw height
-              left: screenWidth / 2 -
-                  100 -
-                  100, // paw left position - button width
-              child: Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  shape: BoxShape.circle,
-                ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: _animateBlackCat,
-                    borderRadius: BorderRadius.circular(40),
-                    child: const Center(
-                      child: Icon(
-                        Icons.play_arrow,
-                        color: Colors.white,
-                        size: 40,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            // Orange cat paw centered
+
+            // Orange cat paw
             Positioned(
               bottom: 50,
               left: screenWidth / 2 - 100,
               child: SlideTransition(
-                position: _orangeAnimation,
+                position: controller.orangeAnimation,
                 child: Image.asset(
                   'assets/game-art/orange-cat-paw.png',
                   width: 200,
@@ -292,30 +119,41 @@ class _CatGameScreenState extends State<CatGameScreen>
                 ),
               ),
             ),
-            // Orange button positioned relative to orange paw
+
+            // Single button (middle right side)
             Positioned(
-              bottom: 50 + 100, // 150 from bottom + half of paw height
-              left:
-                  screenWidth / 2 - 100 + 200, // paw left position + paw width
-              child: Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: Colors.orange,
-                  shape: BoxShape.circle,
-                ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: _animateOrangeCat,
-                    borderRadius: BorderRadius.circular(40),
-                    child: const Center(
-                      child: Icon(
-                        Icons.play_arrow,
-                        color: Colors.white,
-                        size: 40,
-                      ),
+              top: MediaQuery.of(context).size.height / 2 - 40,
+              right: 40,
+              child: GestureDetector(
+                onTap: () {
+                  // Randomly choose which cat paw to animate
+                  bool isOrange = Random().nextBool();
+                  controller.animateCat(
+                    isOrange: isOrange,
+
+                  );
+                },
+                child: Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.orange, Colors.black],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Icon(Icons.play_arrow, color: Colors.white, size: 40),
                   ),
                 ),
               ),

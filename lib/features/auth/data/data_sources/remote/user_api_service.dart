@@ -1,4 +1,5 @@
 import 'package:love_quest/core/network/dio_client.dart';
+import 'package:logger/logger.dart';
 
 abstract class UserApiService {
   Future<Map<String, dynamic>> loginUser(
@@ -7,16 +8,24 @@ abstract class UserApiService {
       {required String userName,
       required String email,
       required String password});
-  Future<String> getUserInfo();
+  Future<Map<String, dynamic>> getUserInfo();
 }
 
 class UserApiServiceImpl implements UserApiService {
   final DioClient _client;
   UserApiServiceImpl(this._client);
+  final logger = Logger();
   @override
-  Future<String> getUserInfo() {
-    // TODO: implement getUserInfo
-    throw UnimplementedError();
+  Future<Map<String, dynamic>> getUserInfo() async {
+    try {
+      final response = await _client.get('/users/me');
+      logger.i('Get user profile response status: ${response.statusCode}');
+      logger.i('Get user profile response data: ${response.data}');
+      return response.data;
+    } catch (e) {
+      logger.e('Get user profile error: $e');
+      rethrow;
+    }
   }
 
   @override
@@ -27,11 +36,11 @@ class UserApiServiceImpl implements UserApiService {
         'email': email,
         'password': password,
       });
-      print('Sign in response status: ${response.statusCode}');
-      print('Sign in response data: ${response.data}');
+      logger.i('Sign in response status: ${response.statusCode}');
+      logger.i('Sign in response data: ${response.data}');
       return response.data;
     } catch (e) {
-      print('Signup error: $e');
+      logger.i('Signup error: $e');
       rethrow;
     }
   }
@@ -41,10 +50,10 @@ class UserApiServiceImpl implements UserApiService {
       {required String userName,
       required String email,
       required String password}) async {
-    print('Making signup request with data:');
-    print('Username: $userName');
-    print('Email: $email');
-    print('Password: ${password.length} characters');
+    logger.i('Making signup request with data:');
+    logger.i('Username: $userName');
+    logger.i('Email: $email');
+    logger.i('Password: ${password.length} characters');
 
     try {
       final response = await _client.post('/auth/sign-up', data: {

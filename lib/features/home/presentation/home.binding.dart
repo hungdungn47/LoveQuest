@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:love_quest/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:love_quest/features/profile/presentations/profile.page.dart';
 import 'package:love_quest/features/chat/presentation/chat_controller.dart';
 import 'package:love_quest/features/schedule/presentation/schedule_controller.dart';

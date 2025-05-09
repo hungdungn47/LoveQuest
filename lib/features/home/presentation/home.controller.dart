@@ -1,13 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:love_quest/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 class HomeController extends GetxController {
-  final PersistentTabController _persistentTabController = PersistentTabController(initialIndex: 0);
+  final PersistentTabController _persistentTabController =
+      PersistentTabController(initialIndex: 0);
   final PageController _pageController = PageController();
   PageController get pageController => _pageController;
-  PersistentTabController get persistentTabController => _persistentTabController;
+  PersistentTabController get persistentTabController =>
+      _persistentTabController;
   RxInt currentIndex = 0.obs;
+
+  final AuthController _authController = Get.find<AuthController>();
+
+  @override
+  void onInit() {
+    // TODO: implement onInit
+    super.onInit();
+    // _authController.getProfile();
+  }
+
   void updateCurrentIndex(int val) {
     currentIndex.value = val;
   }

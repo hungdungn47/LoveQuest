@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:love_quest/core/socket/socket_service.dart';
 import 'package:love_quest/features/quiz_game/domain/entities/quiz.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 
@@ -34,28 +35,58 @@ class LightningQuizController extends GetxController {
     )
   ];
   var currentQuizIndex = 0.obs;
+  Rx<QuizEntity> currentQuiz = QuizEntity(
+    question: '',
+    option1: '',
+    option2: ''
+  ).obs;
+  RxString gameId = ''.obs;
   var remainingTime = 500.obs;
   var selectedOption = RxnString();
   var isCompleted = false.obs;
-  List<String> answers = [];
+  List<String> answers = ['1', '1', '1', '1', '1'];
   Timer? _timer;
   final logger = Logger();
-  QuizEntity get getCurrentQuiz => currentQuizIndex.value == quizList.length
-      ? quizList[quizList.length - 1]
-      : quizList[currentQuizIndex.value];
+  // QuizEntity get getCurrentQuiz => currentQuizIndex.value == quizList.length
+  //     ? quizList[quizList.length - 1]
+  //     : quizList[currentQuizIndex.value];
+  QuizEntity get getCurrentQuiz => currentQuiz.value;
 
   double get progress => currentQuizIndex / quizList.length;
   double get remainingTimeInSeconds => remainingTime.value / 100;
 
+  final SocketService _socketService = SocketService();
+
+  Future<void> _initializeGameSocket() async {
+    logger.i('Quiz game connecting');
+    await _socketService.connect();
+
+    _socketService.sendMessage(
+        'qa_ready', {'roomId': 'quiz_game', 'userId': 'userA'});
+
+    _socketService.listenToMessages('qa_questionSender', (data) {
+      submitAnswer();
+      startTimer();
+      logger.i('Received question $data');
+      QuizEntity newQuiz = QuizEntity(
+        question: data['question'],
+        option1: data['optionA'],
+        option2: data['optionB']
+      );
+      gameId.value = data['gameId'];
+      currentQuiz.value = newQuiz;
+      currentQuizIndex.value += 1;
+    });
+
+    _socketService.listenToMessages('qa_answerReceiver', (data) {
+      logger.i('Received answers: $data');
+    });
+  }
+
   @override
   void onInit() {
     super.onInit();
-    // ever(currentQuizIndex, (_) {
-    //   if (currentQuizIndex.value < quizList.length) {
-    //     startTimer();
-    //   }
-    // });
-    startTimer();
+    _initializeGameSocket();
   }
 
   void startTimer() {
@@ -80,12 +111,19 @@ class LightningQuizController extends GetxController {
     moveToNextQuestion();
   }
 
-  void submitQuiz(String answer) {
+  void chooseAnswer(String answer) {
     logger.i('Answer: $answer');
     selectedOption.value = answer;
-    // Future.delayed(const Duration(milliseconds: 500), () {
-    //   moveToNextQuestion();
-    // });
+  }
+
+  void submitAnswer() {
+    _socketService.sendMessage('qa_answerReceiver', {
+      'userId': 'userA',
+      'roomId': 'quiz_game',
+      'gameId': gameId.value,
+      'answer': selectedOption.value
+    });
+    selectedOption.value = '';
   }
 
   void moveToNextQuestion() {
@@ -94,9 +132,9 @@ class LightningQuizController extends GetxController {
     } else {
       answers.add("");
     }
-    currentQuizIndex++;
+    // currentQuizIndex++;
     if (currentQuizIndex.value < quizList.length) {
-      startTimer();
+      // startTimer();
     } else {
       _timer?.cancel();
       remainingTime.value = 0;

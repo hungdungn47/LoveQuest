@@ -1,10 +1,11 @@
 import 'package:get/get.dart';
-import 'package:love_quest/features/auth/presentation/pages/home_screen.dart';
+// import 'package:love_quest/features/auth/presentation/pages/home_screen.dart';
 import 'package:love_quest/features/auth/presentation/pages/login_screen.dart';
 import 'package:love_quest/features/auth/presentation/pages/onboarding_screens/gender_screen.dart';
 import 'package:love_quest/features/auth/presentation/pages/onboarding_screens/interests_screen.dart';
 import 'package:love_quest/features/auth/presentation/pages/onboarding_screens/name_screen.dart';
 import 'package:love_quest/features/auth/presentation/pages/signup_screen.dart';
+import 'package:love_quest/features/cat_game/presentation/cat_game.binding.dart';
 import 'package:love_quest/features/cat_game/presentation/cat_game.screen.dart';
 import 'package:love_quest/features/chat/presentation/chat_screen.dart';
 import 'package:love_quest/features/home/presentation/home.binding.dart';
@@ -65,6 +66,7 @@ class AppRoutes {
     GetPage(
       name: cat_game,
       page: () => const CatGameScreen(),
+      binding: CatGameBinding(),
     ),
   ];
 }

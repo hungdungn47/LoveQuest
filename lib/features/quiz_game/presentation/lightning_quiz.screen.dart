@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:love_quest/core/config/routes.dart';
 import 'package:love_quest/core/config/theme.dart';
 import 'package:love_quest/features/quiz_game/presentation/lightning_quiz.controller.dart';
 import 'package:love_quest/features/quiz_game/presentation/widgets/outlined_button.dart';
@@ -18,7 +19,7 @@ class LightningQuizScreen extends GetView<LightningQuizController> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(CupertinoIcons.back, color: Colors.white),
-          onPressed: () => Get.back(),
+          onPressed: () => Get.offAllNamed(AppRoutes.home),
         ),
         title: Text(
           'LoveQuest',
@@ -123,7 +124,7 @@ class LightningQuizScreen extends GetView<LightningQuizController> {
                               controller.getCurrentQuiz.option1,
                           onPressed: () {
                             controller
-                                .submitQuiz(controller.getCurrentQuiz.option1!);
+                                .chooseAnswer(controller.getCurrentQuiz.option1!);
                           },
                         ),
                       ),
@@ -135,7 +136,7 @@ class LightningQuizScreen extends GetView<LightningQuizController> {
                               controller.getCurrentQuiz.option2,
                           onPressed: () {
                             controller
-                                .submitQuiz(controller.getCurrentQuiz.option2!);
+                                .chooseAnswer(controller.getCurrentQuiz.option2!);
                           },
                         ),
                       ),
