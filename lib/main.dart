@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: AppTheme.lightTheme,
       getPages: AppRoutes.routes,
-      initialRoute: AppRoutes.login,
+      initialRoute: AppRoutes.cat_game,
     );
   }
 }

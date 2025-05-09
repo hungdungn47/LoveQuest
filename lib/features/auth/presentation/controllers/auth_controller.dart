@@ -4,6 +4,7 @@ import 'package:love_quest/core/config/routes.dart';
 import 'package:love_quest/core/resources/data_state.dart';
 import 'package:love_quest/core/storage/local_storage.dart';
 import 'package:love_quest/features/auth/domain/entities/user.dart';
+import 'package:love_quest/features/auth/domain/usecases/get_profile.dart';
 import 'package:love_quest/features/auth/domain/usecases/signup.dart';
 import 'package:love_quest/features/auth/domain/usecases/login.dart';
 import 'package:logger/logger.dart';
@@ -21,6 +22,27 @@ class AuthController extends GetxController {
   final RxList<String> selectedInterests = <String>[].obs;
 
   var logger = Logger();
+
+  void getProfile() async {
+    try {
+      isLoading.value = true;
+      final getProfileUseCase = Get.find<GetProfileUseCase>();
+      final result = await getProfileUseCase.call(NoParams());
+
+      if (result is DataSuccess) {
+        logger.i('Got user profile: ${result.data}');
+        if (result.data != null) {
+          user.value = result.data!;
+        }
+      } else if (result is DataFailed) {
+        Get.offAllNamed(AppRoutes.login);
+      }
+    } catch (e) {
+      Get.offAllNamed(AppRoutes.login);
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   void signup() async {
     if (usernameController.text.isEmpty ||
@@ -42,7 +64,7 @@ class AuthController extends GetxController {
         password: passwordController.text,
       ));
 
-      print('Controller: Signup result: $result');
+      logger.i('Controller: Signup result: $result');
 
       if (result is DataSuccess) {
         user.value = UserEntity(
@@ -55,7 +77,7 @@ class AuthController extends GetxController {
             snackPosition: SnackPosition.BOTTOM);
       }
     } catch (e) {
-      print('Controller: Signup error: $e');
+      logger.e('Controller: Signup error: $e');
       Get.snackbar('Error', 'An unexpected error occurred: $e',
           snackPosition: SnackPosition.BOTTOM);
     } finally {

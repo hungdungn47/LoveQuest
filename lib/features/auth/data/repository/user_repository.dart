@@ -9,11 +9,24 @@ import 'package:logger/logger.dart';
 class UserRepositoryImpl implements UserRepository {
   final UserApiService _userApiService;
   final localStorage = LocalStorage();
+  final logger = Logger();
   UserRepositoryImpl(this._userApiService);
   @override
-  Future<DataState<UserEntity>> getUserInfo() {
-    // TODO: implement getUserInfo
-    throw UnimplementedError();
+  Future<DataState<UserEntity>> getUserInfo() async {
+    try {
+      Map<String, dynamic> result = await _userApiService.getUserInfo();
+      final UserEntity user = UserEntity(
+        email: result['email'] ?? '',
+        nickName: result['userName'] ?? '',
+        fullName: result['fullName'] ?? '',
+        id: result['_id'] ?? '',
+        avatar: result['avatar'] ?? '',
+      );
+      return DataSuccess(user);
+    } catch (e) {
+      logger.e('Get user profile error: $e');
+      return DataFailed(Exception(e));
+    }
   }
 
   @override
@@ -24,7 +37,7 @@ class UserRepositoryImpl implements UserRepository {
       Map<String, dynamic> result =
           await _userApiService.loginUser(email: email, password: password);
       final accessToken = result['accessToken'];
-      if(accessToken != null) {
+      if (accessToken != null) {
         localStorage.saveData('accessToken', result['accessToken']);
       }
 

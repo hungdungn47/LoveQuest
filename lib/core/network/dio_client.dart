@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:love_quest/core/storage/local_storage.dart';
 
 class DioClient {
   // Private constructor
@@ -8,6 +9,8 @@ class DioClient {
   static final DioClient _instance = DioClient._internal();
   // Getter for the instance
   static DioClient get instance => _instance;
+
+  final LocalStorage _localStorage = LocalStorage();
   late Dio _dio;
   // Configuration function
   void configureDio({
@@ -35,6 +38,10 @@ class DioClient {
       InterceptorsWrapper(
         onRequest: onRequest ??
             (options, handler) {
+              final accessToken = _localStorage.readData('accessToken');
+              if (accessToken != null) {
+                options.headers['Authorization'] = 'Bearer $accessToken';
+              }
               debugPrint('Request: ${options.method} ${options.path}');
               debugPrint('Headers: ${options.headers}');
               debugPrint('Query Params: ${options.queryParameters}');

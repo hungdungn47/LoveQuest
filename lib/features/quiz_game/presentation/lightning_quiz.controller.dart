@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:love_quest/core/socket/socket_service.dart';
 import 'package:love_quest/features/quiz_game/domain/entities/quiz.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 
@@ -34,27 +35,46 @@ class LightningQuizController extends GetxController {
     )
   ];
   var currentQuizIndex = 0.obs;
+  Rx<QuizEntity> currentQuiz = QuizEntity().obs;
   var remainingTime = 500.obs;
   var selectedOption = RxnString();
   var isCompleted = false.obs;
   List<String> answers = [];
   Timer? _timer;
   final logger = Logger();
-  QuizEntity get getCurrentQuiz => currentQuizIndex.value == quizList.length
-      ? quizList[quizList.length - 1]
-      : quizList[currentQuizIndex.value];
+  // QuizEntity get getCurrentQuiz => currentQuizIndex.value == quizList.length
+  //     ? quizList[quizList.length - 1]
+  //     : quizList[currentQuizIndex.value];
+  QuizEntity get getCurrentQuiz => currentQuiz.value;
 
   double get progress => currentQuizIndex / quizList.length;
   double get remainingTimeInSeconds => remainingTime.value / 100;
 
+  final SocketService _socketService = SocketService();
+
+  Future<void> _initializeGameSocket() async {
+    logger.i('Quiz game connecting');
+    await _socketService.connect();
+
+    _socketService.sendMessage(
+        'qa_ready', {'roomId': 'quiz_game', 'userId': '123'});
+
+    _socketService.listenToMessages('qa_questionSender', (data) {
+      logger.i('Received question $data');
+      QuizEntity newQuiz = QuizEntity(
+        question: data['question'],
+        option1: data['optionA'],
+        option2: data['optionB']
+      );
+      currentQuiz.value = newQuiz;
+      currentQuizIndex.value += 1;
+    });
+  }
+
   @override
   void onInit() {
     super.onInit();
-    // ever(currentQuizIndex, (_) {
-    //   if (currentQuizIndex.value < quizList.length) {
-    //     startTimer();
-    //   }
-    // });
+    _initializeGameSocket();
     startTimer();
   }
 

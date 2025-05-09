@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:love_quest/core/config/theme.dart';
+import 'package:love_quest/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:love_quest/features/home/presentation/home.controller.dart';
 import 'package:love_quest/features/home/widgets/HomePage.dart';
 import 'package:love_quest/features/schedule/presentation/schedule_screen.dart';
