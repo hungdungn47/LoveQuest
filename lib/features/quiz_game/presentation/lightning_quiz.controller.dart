@@ -35,11 +35,16 @@ class LightningQuizController extends GetxController {
     )
   ];
   var currentQuizIndex = 0.obs;
-  Rx<QuizEntity> currentQuiz = QuizEntity().obs;
+  Rx<QuizEntity> currentQuiz = QuizEntity(
+    question: '',
+    option1: '',
+    option2: ''
+  ).obs;
+  RxString gameId = ''.obs;
   var remainingTime = 500.obs;
   var selectedOption = RxnString();
   var isCompleted = false.obs;
-  List<String> answers = [];
+  List<String> answers = ['1', '1', '1', '1', '1'];
   Timer? _timer;
   final logger = Logger();
   // QuizEntity get getCurrentQuiz => currentQuizIndex.value == quizList.length
@@ -57,17 +62,23 @@ class LightningQuizController extends GetxController {
     await _socketService.connect();
 
     _socketService.sendMessage(
-        'qa_ready', {'roomId': 'quiz_game', 'userId': '123'});
+        'qa_ready', {'roomId': 'quiz_game', 'userId': 'userA'});
 
     _socketService.listenToMessages('qa_questionSender', (data) {
+      submitAnswer();
       logger.i('Received question $data');
       QuizEntity newQuiz = QuizEntity(
         question: data['question'],
         option1: data['optionA'],
         option2: data['optionB']
       );
+      gameId.value = data['gameId'];
       currentQuiz.value = newQuiz;
       currentQuizIndex.value += 1;
+    });
+
+    _socketService.listenToMessages('qa_answerReceiver', (data) {
+      logger.i('Received answers: $data');
     });
   }
 
@@ -100,12 +111,18 @@ class LightningQuizController extends GetxController {
     moveToNextQuestion();
   }
 
-  void submitQuiz(String answer) {
+  void chooseAnswer(String answer) {
     logger.i('Answer: $answer');
     selectedOption.value = answer;
-    // Future.delayed(const Duration(milliseconds: 500), () {
-    //   moveToNextQuestion();
-    // });
+  }
+
+  void submitAnswer() {
+    _socketService.sendMessage('qa_answerReceiver', {
+      'userId': 'userA',
+      'roomId': 'quiz_game',
+      'gameId': gameId.value,
+      'answer': selectedOption.value
+    });
   }
 
   void moveToNextQuestion() {
@@ -114,7 +131,7 @@ class LightningQuizController extends GetxController {
     } else {
       answers.add("");
     }
-    currentQuizIndex++;
+    // currentQuizIndex++;
     if (currentQuizIndex.value < quizList.length) {
       startTimer();
     } else {

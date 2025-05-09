@@ -124,7 +124,7 @@ class LightningQuizScreen extends GetView<LightningQuizController> {
                               controller.getCurrentQuiz.option1,
                           onPressed: () {
                             controller
-                                .submitQuiz(controller.getCurrentQuiz.option1!);
+                                .chooseAnswer(controller.getCurrentQuiz.option1!);
                           },
                         ),
                       ),
@@ -136,7 +136,7 @@ class LightningQuizScreen extends GetView<LightningQuizController> {
                               controller.getCurrentQuiz.option2,
                           onPressed: () {
                             controller
-                                .submitQuiz(controller.getCurrentQuiz.option2!);
+                                .chooseAnswer(controller.getCurrentQuiz.option2!);
                           },
                         ),
                       ),
