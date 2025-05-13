@@ -166,7 +166,7 @@ class CatGameController extends GetxController
     controller.forward().then((_) {
       _socketService.sendMessage('fish_hunter_answer', {
         'gameId': gameId.value,
-        'roomId': 'cat_game',
+        'roomId': globalController.roomId.value,
         'message': 'tapped the food',
       });
       Future.delayed(const Duration(milliseconds: 50), () {
