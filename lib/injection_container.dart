@@ -13,7 +13,7 @@ import 'features/auth/domain/usecases/signup.dart';
 Future<void> initializeDependencies() async {
   final dioClient = DioClient.instance;
   dioClient.configureDio(
-    baseUrl: 'https://95dd-2001-ee0-4a6d-45b0-9d5e-2096-bf2a-cbe.ngrok-free.app/api',
+    baseUrl: 'http://192.168.1.7:3000/api',
     defaultHeaders: {
       'Content-Type': 'application/json',
     },

@@ -17,28 +17,34 @@ class AuthController extends GetxController {
   final TextEditingController fullNameController = TextEditingController();
   final TextEditingController birthdayController = TextEditingController();
 
+  final RxBool isLoggedIn = false.obs;
   final RxBool isLoading = false.obs;
   final RxString selectedGender = ''.obs;
   final RxList<String> selectedInterests = <String>[].obs;
 
   var logger = Logger();
 
-  void getProfile() async {
+  Future<void> getProfile() async {
     try {
-      isLoading.value = true;
+      // isLoading.value = true;
       final getProfileUseCase = Get.find<GetProfileUseCase>();
       final result = await getProfileUseCase.call(NoParams());
 
       if (result is DataSuccess) {
         logger.i('Got user profile: ${result.data}');
         if (result.data != null) {
+          isLoggedIn.value = true;
           user.value = result.data!;
         }
       } else if (result is DataFailed) {
-        Get.offAllNamed(AppRoutes.login);
+        // Get.offAllNamed(AppRoutes.login);
+        logger.i('Failed getting user profile');
+        isLoggedIn.value = false;
       }
     } catch (e) {
-      Get.offAllNamed(AppRoutes.login);
+      // Get.offAllNamed(AppRoutes.login);
+      logger.i('Failed getting user profile');
+      isLoggedIn.value = false;
     } finally {
       isLoading.value = false;
     }

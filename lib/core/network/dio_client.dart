@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:love_quest/core/storage/local_storage.dart';
+import 'package:logger/logger.dart';
 
 class DioClient {
   // Private constructor
@@ -11,6 +12,7 @@ class DioClient {
   static DioClient get instance => _instance;
 
   final LocalStorage _localStorage = LocalStorage();
+  final Logger logger = Logger();
   late Dio _dio;
   // Configuration function
   void configureDio({
@@ -38,7 +40,8 @@ class DioClient {
       InterceptorsWrapper(
         onRequest: onRequest ??
             (options, handler) {
-              final accessToken = _localStorage.readData('accessToken');
+              final accessToken = LocalStorage().readData('accessToken');
+              logger.i('Getting access token befor request: ${accessToken}');
               if (accessToken != null) {
                 options.headers['Authorization'] = 'Bearer $accessToken';
               }
@@ -62,10 +65,13 @@ class DioClient {
   }
 
   Future<Response> get(String endpoint,
-      {Map<String, dynamic>? queryParameters}) async {
+      {Map<String, dynamic>? queryParameters, Map<String, dynamic>? headers}) async {
     Response response = await _dio.get(
       endpoint,
       queryParameters: queryParameters,
+      options: Options(
+        headers: headers
+      )
     );
     return response;
   }

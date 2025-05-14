@@ -5,6 +5,7 @@ import 'package:love_quest/features/auth/presentation/pages/onboarding_screens/g
 import 'package:love_quest/features/auth/presentation/pages/onboarding_screens/interests_screen.dart';
 import 'package:love_quest/features/auth/presentation/pages/onboarding_screens/name_screen.dart';
 import 'package:love_quest/features/auth/presentation/pages/signup_screen.dart';
+import 'package:love_quest/features/auth/presentation/pages/splash_screen.dart';
 import 'package:love_quest/features/cat_game/presentation/cat_game.binding.dart';
 import 'package:love_quest/features/cat_game/presentation/cat_game.screen.dart';
 import 'package:love_quest/features/chat/presentation/chat_screen.dart';
@@ -48,10 +49,12 @@ class AppRoutes {
   static const String chat = '/chat';
   static const String cat_game = '/cat-game';
   static const String schedule = '/schedule';
+  static const String splash = '/splash';
 
   static final routes = [
     GetPage(name: signup, page: () => SignupScreen()),
     GetPage(name: login, page: () => LoginScreen()),
+    GetPage(name: splash, page: () => SplashScreen()),
     GetPage(name: name, page: () => NameScreen()),
     // GetPage(name: birthday, page: () => BirthdayScreen()),
     GetPage(name: gender, page: () => GenderScreen()),

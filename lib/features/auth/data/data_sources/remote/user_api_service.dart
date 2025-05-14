@@ -1,5 +1,6 @@
 import 'package:love_quest/core/network/dio_client.dart';
 import 'package:logger/logger.dart';
+import 'package:love_quest/core/storage/local_storage.dart';
 
 abstract class UserApiService {
   Future<Map<String, dynamic>> loginUser(
@@ -18,7 +19,9 @@ class UserApiServiceImpl implements UserApiService {
   @override
   Future<Map<String, dynamic>> getUserInfo() async {
     try {
-      final response = await _client.get('/users/me');
+      final accessToken = LocalStorage().readData('accessToken');
+      logger.i('Access token in API service: ${accessToken}');
+      final response = await _client.get('/users/me', headers: {'Authorization': 'Bearer ${accessToken}'});
       logger.i('Get user profile response status: ${response.statusCode}');
       logger.i('Get user profile response data: ${response.data}');
       return response.data;
