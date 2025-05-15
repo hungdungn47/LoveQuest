@@ -7,6 +7,7 @@ import 'package:love_quest/features/auth/domain/entities/user.dart';
 import 'package:love_quest/features/auth/domain/usecases/get_profile.dart';
 import 'package:love_quest/features/auth/domain/usecases/signup.dart';
 import 'package:love_quest/features/auth/domain/usecases/login.dart';
+import 'package:love_quest/features/auth/domain/usecases/verify_otp.dart';
 import 'package:logger/logger.dart';
 
 class AuthController extends GetxController {
@@ -33,9 +34,11 @@ class AuthController extends GetxController {
       if (result is DataSuccess) {
         logger.i('Got user profile: ${result.data}');
         if (result.data != null) {
+          logger.i('Result data:: ${result.data?.gender}');
           isLoggedIn.value = true;
           user.value = result.data!;
         }
+        logger.i('User gender in controller: ${user.value.gender}');
       } else if (result is DataFailed) {
         // Get.offAllNamed(AppRoutes.login);
         logger.i('Failed getting user profile');
@@ -77,7 +80,7 @@ class AuthController extends GetxController {
           email: emailController.text,
           nickName: usernameController.text,
         );
-        Get.toNamed(AppRoutes.name);
+        Get.toNamed(AppRoutes.otp);
       } else if (result is DataFailed) {
         Get.snackbar('Error', result.exception.toString(),
             snackPosition: SnackPosition.BOTTOM);
@@ -121,6 +124,7 @@ class AuthController extends GetxController {
           avatar: userData['avatar'] ?? '',
           gender: userData['gender'] ?? '',
         );
+        logger.i('Gender: ${user.value.gender}');
         Get.offAllNamed(AppRoutes.home);
       } else if (result is DataFailed) {
         Get.snackbar('Error', result.exception.toString(),
@@ -132,6 +136,16 @@ class AuthController extends GetxController {
           snackPosition: SnackPosition.BOTTOM);
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> verifyOtp(String otp) async {
+    try {
+      final verifyOtpUsecase = Get.find<VerifyOtpUseCase>();
+      await verifyOtpUsecase.call(VerifyOtpParams(email: emailController.text, otp: otp));
+    } catch (e) {
+      Get.snackbar('Error', 'Invalid OTP',
+          snackPosition: SnackPosition.BOTTOM);
     }
   }
 

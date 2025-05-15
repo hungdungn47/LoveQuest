@@ -63,6 +63,7 @@ class HomeController extends GetxController {
   void handleFindPartner() {
     isLoading.value = true;
     print("Gender is ${_authController.user.value.gender}");
+    _socketService.sendMessage(EventName.online, {"userId": _authController.user.value.id, "gender": _authController.user.value.gender});
     _socketService.sendMessage(EventName.matching, {
       "userId": _authController.user.value.id,
       "gender": _authController.user.value.gender,
@@ -79,7 +80,7 @@ class HomeController extends GetxController {
       String roomId = data["roomId"];
       isLoading.value = false;
       _globalController.roomId.value = roomId;
-      Get.toNamed(AppRoutes.cat_game);
+      Get.toNamed(AppRoutes.quiz_game);
       // _joinRoom(roomId);
     });
   }

@@ -155,9 +155,8 @@ class LightningQuizScreen extends GetView<LightningQuizController> {
                         questions: controller.quizList,
                         answers: controller.answers,
                         onProceed: () {
-                          // TODO: Navigate to next game
                           Get.back();
-                        },
+                        }, opponentAnswers: controller.opponentAnswers,
                       ),
                     ),
                   )

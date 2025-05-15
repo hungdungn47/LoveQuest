@@ -21,6 +21,7 @@ class UserRepositoryImpl implements UserRepository {
         fullName: result['fullName'] ?? '',
         id: result['_id'] ?? '',
         avatar: result['avatar'] ?? '',
+        gender: result['gender'] ?? ''
       );
       return DataSuccess(user);
     } catch (e) {
@@ -70,6 +71,20 @@ class UserRepositoryImpl implements UserRepository {
             'Registration failed: ${e.response?.data?['message'] ?? e.message}'));
       }
       return DataFailed(Exception('Registration failed: $e'));
+    }
+  }
+
+  @override
+  Future<DataState<Map<String, dynamic>>> verifyOtp({required String email, required String otp}) async {
+    try {
+      Map<String, dynamic> result = await _userApiService.verifyOtp(email: email, otp: otp);
+      localStorage.saveData('accessToken', result['accessToken']);
+      return DataSuccess(result);
+    } catch (e) {
+      logger.e('Repository: Verify OTP failed: $e');
+      return DataFailed(Exception(
+        'Verify OTP failed'
+      ));
     }
   }
 }

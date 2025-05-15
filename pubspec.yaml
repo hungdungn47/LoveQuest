@@ -49,6 +49,7 @@ dependencies:
   animated_text_kit: ^4.2.3
   noise_meter: ^5.0.2
   firebase_core: ^3.13.0
+  pin_code_fields: ^8.0.1
 
 dev_dependencies:
   flutter_test:

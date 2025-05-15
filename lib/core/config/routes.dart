@@ -29,6 +29,7 @@ import 'package:love_quest/features/test/test.binding.dart';
 import 'package:love_quest/features/video_call/call_binding.dart';
 import 'package:love_quest/features/video_call/call_page.dart';
 
+import '../../features/auth/presentation/pages/onboarding_screens/otp_screen.dart';
 import '../../features/test/test.page.dart';
 
 class AppRoutes {
@@ -50,11 +51,13 @@ class AppRoutes {
   static const String cat_game = '/cat-game';
   static const String schedule = '/schedule';
   static const String splash = '/splash';
+  static const String otp = '/otp';
 
   static final routes = [
     GetPage(name: signup, page: () => SignupScreen()),
     GetPage(name: login, page: () => LoginScreen()),
     GetPage(name: splash, page: () => SplashScreen()),
+    GetPage(name: otp, page: () => const OtpScreen()),
     GetPage(name: name, page: () => NameScreen()),
     // GetPage(name: birthday, page: () => BirthdayScreen()),
     GetPage(name: gender, page: () => GenderScreen()),

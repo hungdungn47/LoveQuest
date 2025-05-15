@@ -194,7 +194,7 @@ class CatGameController extends GetxController
     _socketService.sendMessage('fish_hunter_leaveRoom', {
       'clientId': clientId.value
     });
-    _socketService.disconnect();
+    // _socketService.disconnect();
     super.onClose();
   }
 }

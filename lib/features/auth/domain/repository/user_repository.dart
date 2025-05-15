@@ -9,4 +9,5 @@ abstract interface class UserRepository {
       required String email,
       required String password});
   Future<DataState<UserEntity>> getUserInfo();
+  Future<DataState<Map<String, dynamic>>> verifyOtp({required String email, required String otp});
 }

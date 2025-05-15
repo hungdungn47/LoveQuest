@@ -10,6 +10,7 @@ abstract class UserApiService {
       required String email,
       required String password});
   Future<Map<String, dynamic>> getUserInfo();
+  Future<Map<String, dynamic>> verifyOtp({required String email, required String otp});
 }
 
 class UserApiServiceImpl implements UserApiService {
@@ -69,6 +70,20 @@ class UserApiServiceImpl implements UserApiService {
       return response.data;
     } catch (e) {
       print('Signup error: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> verifyOtp({required String email, required String otp}) async {
+    try {
+      final response = await _client.post('/auth/verify-otp', data: {
+        'email': email,
+        'otp': otp
+      });
+      return response.data;
+    } catch (e) {
+      logger.e('Verify OTP error: $e');
       rethrow;
     }
   }
