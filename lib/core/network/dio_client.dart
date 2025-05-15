@@ -98,6 +98,17 @@ class DioClient {
     return response;
   }
 
+  Future<Response> patch(String endpoint,
+      {Map<String, dynamic>? data,
+        Map<String, dynamic>? queryParameters,
+        String contentType = 'application/json'}) async {
+    Response response = await _dio.patch(endpoint,
+        data: data,
+        queryParameters: queryParameters,
+        options: Options(contentType: contentType));
+    return response;
+  }
+
   Future<Response> delete(String endpoint,
       {Map<String, dynamic>? data,
       Map<String, dynamic>? queryParameters,

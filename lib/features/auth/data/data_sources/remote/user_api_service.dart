@@ -11,6 +11,7 @@ abstract class UserApiService {
       required String password});
   Future<Map<String, dynamic>> getUserInfo();
   Future<Map<String, dynamic>> verifyOtp({required String email, required String otp});
+  Future<Map<String, dynamic>> updateUser({required Map<String, dynamic> updateData});
 }
 
 class UserApiServiceImpl implements UserApiService {
@@ -84,6 +85,17 @@ class UserApiServiceImpl implements UserApiService {
       return response.data;
     } catch (e) {
       logger.e('Verify OTP error: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> updateUser({required Map<String, dynamic> updateData}) async {
+    try {
+      final response = await _client.patch('/users/me', data: updateData);
+      return response.data;
+    } catch (e) {
+      logger.e('Update user error: $e');
       rethrow;
     }
   }

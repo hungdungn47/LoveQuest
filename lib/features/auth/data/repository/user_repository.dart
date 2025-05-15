@@ -5,6 +5,7 @@ import 'package:love_quest/features/auth/domain/entities/user.dart';
 import 'package:love_quest/features/auth/domain/repository/user_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
+import 'package:love_quest/features/auth/domain/usecases/update_user.dart';
 
 class UserRepositoryImpl implements UserRepository {
   final UserApiService _userApiService;
@@ -85,6 +86,18 @@ class UserRepositoryImpl implements UserRepository {
       return DataFailed(Exception(
         'Verify OTP failed'
       ));
+    }
+  }
+
+  @override
+  Future<DataState<UserEntity>> updateUser(UpdateParams params) async {
+    // TODO: implement updateUser
+    try {
+      Map<String, dynamic> result = await _userApiService.updateUser(updateData: params.toJson());
+      final UserEntity user = UserEntity.fromJson(result);
+      return DataSuccess(user);
+    } catch (e) {
+      return DataFailed(Exception('Update user failed'));
     }
   }
 }

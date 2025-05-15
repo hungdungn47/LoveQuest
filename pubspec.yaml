@@ -50,6 +50,7 @@ dependencies:
   noise_meter: ^5.0.2
   firebase_core: ^3.13.0
   pin_code_fields: ^8.0.1
+  cloud_firestore: ^5.6.7
 
 dev_dependencies:
   flutter_test:

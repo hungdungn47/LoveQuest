@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:love_quest/core/global/global.controller.dart';
 import 'package:love_quest/core/socket/socket_service.dart';
 
 class ChatController extends GetxController {
@@ -9,6 +11,7 @@ class ChatController extends GetxController {
   final TextEditingController messageController = TextEditingController();
 
   final SocketService _socketService = SocketService();
+  final GlobalController globalController = Get.find<GlobalController>();
 
   String? currentChatUserId;
 
@@ -164,6 +167,19 @@ class ChatController extends GetxController {
       'timestamp': timestamp.millisecondsSinceEpoch,
     });
 
+    // Save to Firebase for offline storage
+    FirebaseFirestore.instance
+        .collection('messages')
+        .doc(messageId)
+        .set({
+      'id': messageId,
+      'senderId': 'currentUserId',
+      'receiverId': userId,
+      'message': message,
+      'timestamp': timestamp.millisecondsSinceEpoch,
+      'isRead': false,
+    });
+
     // Also update the matched user's last message
     updateUserLastMessage(newMessage);
   }
@@ -194,7 +210,7 @@ class ChatController extends GetxController {
     }
   }
 
-  void loadMessages(String userId) {
+  void loadMessages(String userId) async {
     // Clear existing messages first to prevent duplicates
     messages.clear();
 
@@ -206,6 +222,26 @@ class ChatController extends GetxController {
       'userId': 'currentUserId', // Replace with actual current user ID
       'otherUserId': userId,
     });
+
+    final snapshot = await FirebaseFirestore.instance
+        .collection('messages')
+        .where('senderId', whereIn: ['currentUserId', userId])
+        .where('receiverId', whereIn: ['currentUserId', userId])
+        .orderBy('timestamp', descending: true)
+        .get();
+
+    final fetchedMessages = snapshot.docs.map((doc) {
+      final data = doc.data();
+      return ChatMessage(
+        id: data['id'],
+        senderId: data['senderId'],
+        receiverId: data['receiverId'],
+        message: data['message'],
+        timestamp:
+        DateTime.fromMillisecondsSinceEpoch(data['timestamp'] ?? 0),
+        isRead: data['isRead'] ?? false,
+      );
+    }).toList();
 
     // Sample messages for testing
     final List<ChatMessage> tmpMessages = [
@@ -239,7 +275,7 @@ class ChatController extends GetxController {
     tmpMessages.sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
     Future.microtask(() {
-      messages.value = tmpMessages;
+      messages.value = fetchedMessages;
     });
 
     // Mark messages as read
