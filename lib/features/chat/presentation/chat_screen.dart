@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:love_quest/core/config/theme.dart';
+import 'package:love_quest/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:love_quest/features/chat/domain/entities/conversation.dart';
 import 'package:love_quest/features/chat/presentation/chat_controller.dart';
 import 'package:love_quest/features/chat/presentation/chat_conversation_screen.dart';
 
@@ -48,13 +50,13 @@ class ChatScreen extends GetView<ChatController> {
           Expanded(
             child: Obx(
               () => ListView.builder(
-                itemCount: controller.matchedUsers.length,
+                itemCount: controller.conversations.length,
                 itemBuilder: (context, index) {
-                  final user = controller.matchedUsers[index];
+                  final conversation = controller.conversations[index];
                   return ChatListItem(
-                    user: user,
+                    conversation: conversation,
                     onTap: () {
-                      Get.to(() => ChatConversationScreen(user: user));
+                      Get.to(() => ChatConversationScreen(conversation: conversation, userName: getOtherUserId(conversation), isOnline: true,));
                     },
                   );
                 },
@@ -67,13 +69,22 @@ class ChatScreen extends GetView<ChatController> {
   }
 }
 
+String getOtherUserId(ConversationEntity conversation) {
+  final authController = Get.find<AuthController>();
+  if(conversation.receiverId.toString() == authController.user.value.id) {
+    return conversation.senderId!;
+  } else {
+    return conversation.receiverId!;
+  }
+}
+
 class ChatListItem extends StatelessWidget {
-  final ChatUser user;
+  final ConversationEntity conversation;
   final VoidCallback onTap;
 
   const ChatListItem({
     super.key,
-    required this.user,
+    required this.conversation,
     required this.onTap,
   });
 
@@ -89,9 +100,9 @@ class ChatListItem extends StatelessWidget {
             CircleAvatar(
               radius: 30,
               backgroundColor: AppColors.primary.withOpacity(0.1),
-              child: user.profilePicture != null
-                  ? Image.network(user.profilePicture!)
-                  : Icon(Icons.person, color: AppColors.primary, size: 30),
+              // child: user.profilePicture != null
+              //     ? Image.network(user.profilePicture!)
+                  child: Icon(Icons.person, color: AppColors.primary, size: 30),
             ),
             const SizedBox(width: 16),
             // Chat info
@@ -103,7 +114,7 @@ class ChatListItem extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        user.name,
+                        conversation.senderId!,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -111,7 +122,7 @@ class ChatListItem extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        _formatTime(user.lastMessageTime),
+                        _formatTime(conversation.latestCreatedAt!),
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey[600],
@@ -120,40 +131,40 @@ class ChatListItem extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          user.lastMessage,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[600],
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (user.unreadCount > 0)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            user.unreadCount.toString(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
+                  // Row(
+                  //   children: [
+                  //     Expanded(
+                  //       child: Text(
+                  //         user.lastMessage,
+                  //         style: TextStyle(
+                  //           fontSize: 14,
+                  //           color: Colors.grey[600],
+                  //         ),
+                  //         maxLines: 1,
+                  //         overflow: TextOverflow.ellipsis,
+                  //       ),
+                  //     ),
+                  //     if (user.unreadCount > 0)
+                  //       Container(
+                  //         padding: const EdgeInsets.symmetric(
+                  //           horizontal: 8,
+                  //           vertical: 4,
+                  //         ),
+                  //         decoration: BoxDecoration(
+                  //           color: AppColors.primary,
+                  //           borderRadius: BorderRadius.circular(12),
+                  //         ),
+                  //         child: Text(
+                  //           user.unreadCount.toString(),
+                  //           style: const TextStyle(
+                  //             color: Colors.white,
+                  //             fontSize: 12,
+                  //             fontWeight: FontWeight.bold,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //   ],
+                  // ),
                 ],
               ),
             ),

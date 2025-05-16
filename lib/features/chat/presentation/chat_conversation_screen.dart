@@ -1,39 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:love_quest/core/config/theme.dart';
+import 'package:love_quest/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:love_quest/features/chat/presentation/chat_controller.dart';
+import 'package:love_quest/features/chat/domain/entities/message.dart';
+import 'package:love_quest/features/chat/domain/entities/conversation.dart';
+import 'package:love_quest/features/chat/presentation/chat_screen.dart';
 
-class ChatConversationScreen extends StatefulWidget {
-  final ChatUser user;
+class ChatConversationScreen extends StatelessWidget {
+  final ConversationEntity conversation;
+  final String userName;
+  final String? profilePicture;
+  final bool isOnline;
 
-  const ChatConversationScreen({super.key, required this.user});
+  ChatConversationScreen({
+    super.key,
+    required this.conversation,
+    required this.userName,
+    this.profilePicture,
+    required this.isOnline,
+  }) {
+    final ChatController chatController = Get.put(ChatController());
+    final AuthController authController = Get.find<AuthController>();
 
-  @override
-  State<ChatConversationScreen> createState() => _ChatConversationScreenState();
-}
-
-class _ChatConversationScreenState extends State<ChatConversationScreen> {
-  late final ChatController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    // Ensure the controller is initialized
-    if (!Get.isRegistered<ChatController>()) {
-      Get.put(ChatController());
-    }
-    controller = Get.find<ChatController>();
-
-    // Use addPostFrameCallback to defer the operation until after the build
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.loadMessages(widget.user.id);
-    });
-    // Load messages when the conversation screen is opened
-    // controller.loadMessages(widget.user.id);
+    chatController.loadMessages('682629fa9d4197d52ca49306', conversation.receiverId!);
   }
 
   @override
   Widget build(BuildContext context) {
+    final ChatController chatController = Get.find<ChatController>();
+    final AuthController authController = Get.find<AuthController>();
+    final currentUserId = authController.user.value.id!;
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -41,8 +39,8 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
             CircleAvatar(
               radius: 20,
               backgroundColor: AppColors.primary.withOpacity(0.1),
-              child: widget.user.profilePicture != null
-                  ? Image.network(widget.user.profilePicture!)
+              child: profilePicture != null
+                  ? ClipOval(child: Image.network(profilePicture!, fit: BoxFit.cover))
                   : Icon(Icons.person, color: AppColors.primary),
             ),
             const SizedBox(width: 12),
@@ -50,7 +48,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.user.name,
+                  userName,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -58,12 +56,10 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
                   ),
                 ),
                 Text(
-                  widget.user.isOnline ? 'Online' : 'Offline',
+                  isOnline ? 'Online' : 'Offline',
                   style: TextStyle(
                     fontSize: 12,
-                    color: widget.user.isOnline
-                        ? Colors.green[300]
-                        : Colors.grey[300],
+                    color: isOnline ? Colors.green[300] : Colors.grey[300],
                   ),
                 ),
               ],
@@ -75,28 +71,23 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
       ),
       body: Column(
         children: [
-          // Messages list
           Expanded(
             child: Container(
               padding: const EdgeInsets.all(16),
-              child: Obx(
-                () => ListView.builder(
-                  reverse: true,
-                  itemCount: controller.messages.length,
-                  itemBuilder: (context, index) {
-                    final message = controller.messages[index];
-                    final isMe = message.senderId ==
-                        'currentUserId'; // Replace with actual current user ID
-                    return MessageBubble(
-                      message: message,
-                      isMe: isMe,
-                    );
-                  },
-                ),
-              ),
+              child: Obx(() => ListView.builder(
+                reverse: true,
+                itemCount: chatController.messages.length,
+                itemBuilder: (context, index) {
+                  final message = chatController.messages[index];
+                  final isMe = message.senderId == currentUserId;
+                  return MessageBubble(
+                    message: message,
+                    isMe: isMe,
+                  );
+                },
+              )),
             ),
           ),
-          // Message input
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -113,7 +104,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
               children: [
                 Expanded(
                   child: TextField(
-                    controller: controller.messageController,
+                    controller: chatController.messageController,
                     decoration: InputDecoration(
                       hintText: 'Type a message...',
                       border: OutlineInputBorder(
@@ -135,9 +126,10 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
                   child: IconButton(
                     icon: const Icon(Icons.send, color: Colors.white),
                     onPressed: () {
-                      controller.sendMessage(
-                        controller.messageController.text,
-                        widget.user.id,
+                      chatController.sendMessage(
+                        chatController.messageController.text,
+                        conversation.roomId!,
+                        getOtherUserId(conversation)
                       );
                     },
                   ),
@@ -152,7 +144,7 @@ class _ChatConversationScreenState extends State<ChatConversationScreen> {
 }
 
 class MessageBubble extends StatelessWidget {
-  final ChatMessage message;
+  final MessageEntity message;
   final bool isMe;
 
   const MessageBubble({
@@ -174,10 +166,10 @@ class MessageBubble extends StatelessWidget {
         ),
         child: Column(
           crossAxisAlignment:
-              isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             Text(
-              message.message,
+              message.message ?? '',
               style: TextStyle(
                 color: isMe ? Colors.white : Colors.black87,
                 fontSize: 16,
@@ -185,7 +177,7 @@ class MessageBubble extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              _formatTime(message.timestamp),
+              _formatTime(message.createdAt ?? DateTime.now()),
               style: TextStyle(
                 color: isMe ? Colors.white70 : Colors.grey[600],
                 fontSize: 12,

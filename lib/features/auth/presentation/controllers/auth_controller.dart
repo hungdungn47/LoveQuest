@@ -143,6 +143,7 @@ class AuthController extends GetxController {
     try {
       final verifyOtpUsecase = Get.find<VerifyOtpUseCase>();
       await verifyOtpUsecase.call(VerifyOtpParams(email: emailController.text, otp: otp));
+      Get.offNamed(AppRoutes.name);
     } catch (e) {
       Get.snackbar('Error', 'Invalid OTP',
           snackPosition: SnackPosition.BOTTOM);
