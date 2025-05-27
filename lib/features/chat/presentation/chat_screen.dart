@@ -56,7 +56,9 @@ class ChatScreen extends GetView<ChatController> {
                   return ChatListItem(
                     conversation: conversation,
                     onTap: () {
-                      Get.to(() => ChatConversationScreen(conversation: conversation, userName: getOtherUserId(conversation), isOnline: true,));
+                      controller.joinChatRoom(conversation.roomId!);
+                      final String otherUserId = getOtherUserId(conversation);
+                      Get.to(() => ChatConversationScreen(conversation: conversation, userName: otherUserId, isOnline: true,));
                     },
                   );
                 },
@@ -71,6 +73,9 @@ class ChatScreen extends GetView<ChatController> {
 
 String getOtherUserId(ConversationEntity conversation) {
   final authController = Get.find<AuthController>();
+  print('My ID: ${authController.user.value.id}');
+  print('Sender ID: ${conversation.senderId!}');
+  print('Receiver ID: ${conversation.receiverId!}');
   if(conversation.receiverId.toString() == authController.user.value.id) {
     return conversation.senderId!;
   } else {
@@ -114,7 +119,7 @@ class ChatListItem extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        conversation.senderId!,
+                        getOtherUserId(conversation),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

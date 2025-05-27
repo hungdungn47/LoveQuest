@@ -97,7 +97,7 @@ class LightningQuizController extends GetxController {
 
   void startTimer() {
     _timer?.cancel();
-    remainingTime.value = 5 * 100;
+    remainingTime.value = 4 * 100;
     selectedOption.value = null;
 
     _timer = Timer.periodic(Duration(milliseconds: 10), (timer) {

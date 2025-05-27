@@ -70,24 +70,50 @@ class CatGameController extends GetxController
       isGoodFood.value = data['type'] == 'FISH';
     });
 
+    // _socketService.listenToMessages('fish_hunter_notifyGameAnswer', (data) {
+    //   isFoodVisible.value = false;
+    //   if(data['clientId'] == clientId.value) {
+    //     if(role.value == 'orange') {
+    //       orangePoints.value += data['point'] as int;
+    //     } else {
+    //       blackPoints.value += data['point'] as int;
+    //     }
+    //   } else {
+    //     if(role.value == 'orange') {
+    //       blackPoints.value += data['point'] as int;
+    //     } else {
+    //       orangePoints.value += data['point'] as int;
+    //     }
+    //   }
+    //   if (orangePoints.value >= 3 || blackPoints.value >= 3) {
+    //     onWin();
+    //   }
+    //   _playSound(isGoodFood.value);
+    // });
     _socketService.listenToMessages('fish_hunter_notifyGameAnswer', (data) {
       isFoodVisible.value = false;
-      if(data['clientId'] == clientId.value) {
-        if(role.value == 'orange') {
-          orangePoints.value += data['point'] as int;
-        } else {
-          blackPoints.value += data['point'] as int;
-        }
-      } else {
-        if(role.value == 'orange') {
-          blackPoints.value += data['point'] as int;
-        } else {
-          orangePoints.value += data['point'] as int;
-        }
+      logger.i(data);
+      final String answeredClientId = data['clientId'];
+      final int point = data['point'] as int;
+      final bool isSelf = answeredClientId == clientId.value;
+      final bool isMyRoleOrange = role.value == 'orange';
+      final bool answeredByOrange = (isSelf && isMyRoleOrange) || (!isSelf && !isMyRoleOrange);
+      logger.i('My role: ${role.value}; is me: ${isSelf}; by orange: ${answeredByOrange}');
+      // Animate the correct cat based on who answered
+      if(!isSelf) {
+        animateCat(isOrange: answeredByOrange);
       }
+
+      if (answeredByOrange) {
+        orangePoints.value += point;
+      } else {
+        blackPoints.value += point;
+      }
+
       if (orangePoints.value >= 3 || blackPoints.value >= 3) {
         onWin();
       }
+
       _playSound(isGoodFood.value);
     });
 
@@ -161,7 +187,7 @@ class CatGameController extends GetxController
 
     final roleOrange = role.value == 'orange';
 
-    final controller = roleOrange ? orangeController : blackController;
+    final controller = isOrange ? orangeController : blackController;
 
     controller.forward().then((_) {
       _socketService.sendMessage('fish_hunter_answer', {

@@ -33,7 +33,7 @@ class SocketService {
       }
       print('Attempting to connect to socket server...');
       socket = IO.io(
-        'ws://192.168.1.10:3000',
+        'ws://192.168.1.2:3000',
         // 'wss://95dd-2001-ee0-4a6d-45b0-9d5e-2096-bf2a-cbe.ngrok-free.app',
         //   'ws://10.0',
           IO.OptionBuilder()

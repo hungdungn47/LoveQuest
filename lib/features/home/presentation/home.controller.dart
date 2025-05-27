@@ -80,7 +80,8 @@ class HomeController extends GetxController {
       String roomId = data["roomId"];
       isLoading.value = false;
       _globalController.roomId.value = roomId;
-      Get.toNamed(AppRoutes.quiz_game);
+      print('Global controller room id: ${_globalController.roomId.value}');
+      Get.toNamed(AppRoutes.cat_game);
       // _joinRoom(roomId);
     });
   }

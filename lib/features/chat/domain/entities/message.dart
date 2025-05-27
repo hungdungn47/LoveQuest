@@ -31,7 +31,6 @@ class MessageEntity {
 
   Map<String, dynamic> toJson() {
     return {
-      '_id': id,
       'fromUser': senderId,
       'toUser': receiverId,
       'message': message,

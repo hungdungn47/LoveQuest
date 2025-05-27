@@ -61,7 +61,7 @@ class FilmChoosingController extends GetxController {
     _socketService.sendMessage(EventName.filmChoosing, {
       // "roomId": "123456",
       "roomId": _globalController.roomId.value,
-      "filmUrl": "1746013420660-purple_heart.mp4",
+      "filmUrl": "1747361622637-test.mp4",
       "duration": "1h20m",
       "filmName": "Purple Heart",
     });

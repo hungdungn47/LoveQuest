@@ -127,10 +127,9 @@ class CatGameScreen extends GetView<CatGameController> {
               child: GestureDetector(
                 onTap: () {
                   // Randomly choose which cat paw to animate
-                  bool isOrange = Random().nextBool();
+                  bool isOrange = controller.role.value == 'orange';
                   controller.animateCat(
                     isOrange: isOrange,
-
                   );
                 },
                 child: Container(

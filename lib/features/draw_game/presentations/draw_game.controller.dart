@@ -16,7 +16,7 @@ import 'package:love_quest/features/draw_game/dto/drawData.dto.dart';
 import 'package:love_quest/features/draw_game/presentations/test.page.dart';
 
 class DrawGameController extends GetxController {
-  final GlobalController _globalController = GlobalController();
+  final GlobalController _globalController = Get.find<GlobalController>();
   final SocketService _socketService = SocketService();
   final AuthController _authController = Get.find<AuthController>();
   final TextEditingController _textEditingController = TextEditingController();
@@ -171,6 +171,7 @@ class DrawGameController extends GetxController {
         Map<String, String> data = DrawDataDto(
             data: lastDrawable, roomId: _globalController.roomId.value).toMap();
         _socketService.sendMessage('draw', data);
+        print('Room id ${_globalController.roomId.value}');
       }
 
       // curLength.value = curLength.value + 1;

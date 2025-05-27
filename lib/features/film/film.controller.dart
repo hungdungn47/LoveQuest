@@ -63,11 +63,11 @@ class FilmController extends GetxController {
     userId = _authController.user.value.id!;
     peerId = _globalController.peerId.value;
     final data = Get.arguments;
-    final String filmUrl = data["filmUrl"];
-    final String duration = data["duration"];
-    filmName.value = data["filmName"];
+    // final String filmUrl = data["filmUrl"];
+    // final String duration = data["duration"];
+    // filmName.value = data["filmName"];
     _videoController = VideoPlayerController.networkUrl(Uri.parse(
-        'https://6f08-14-191-138-195.ngrok-free.app/upload/stream/fixed_purple_heart.mp4'))
+        'https://2fae-222-252-54-144.ngrok-free.app/api/upload/stream/1747361622637-test.mp4'))
       ..setVolume(1);
     _videoController.initialize().then((_) {
       isVideoInitialized.value = true;

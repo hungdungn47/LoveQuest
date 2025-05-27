@@ -23,7 +23,7 @@ class ChatConversationScreen extends StatelessWidget {
     final ChatController chatController = Get.put(ChatController());
     final AuthController authController = Get.find<AuthController>();
 
-    chatController.loadMessages('682629fa9d4197d52ca49306', conversation.receiverId!);
+    chatController.loadMessages(conversation.roomId!, getOtherUserId(conversation));
   }
 
   @override

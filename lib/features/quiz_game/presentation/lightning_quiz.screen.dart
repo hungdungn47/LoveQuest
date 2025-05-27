@@ -67,7 +67,7 @@ class LightningQuizScreen extends GetView<LightningQuizController> {
                               const SizedBox(width: 12),
                               Obx(
                                 () => Text(
-                                  'Question ${controller.currentQuizIndex.value + 1}',
+                                  'Question ${controller.currentQuizIndex.value}',
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w600,
@@ -155,7 +155,7 @@ class LightningQuizScreen extends GetView<LightningQuizController> {
                         questions: controller.quizList,
                         answers: controller.answers,
                         onProceed: () {
-                          Get.back();
+                          Get.offNamed(AppRoutes.film);
                         }, opponentAnswers: controller.opponentAnswers,
                       ),
                     ),

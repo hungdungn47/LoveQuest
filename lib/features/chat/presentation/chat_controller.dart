@@ -42,7 +42,8 @@ class ChatController extends GetxController {
     // Receiving a message
     _socketService.listenToMessages('receiveMessage', (data) {
       final message = MessageEntity.fromJson(data);
-
+      print('Listening to receiveMessage');
+      print(message);
       // Add message if in current chat room
       if (message.roomId == currentRoomId) {
         messages.insert(0, message);
@@ -88,7 +89,6 @@ class ChatController extends GetxController {
     final senderId = authController.user.value.id;
 
     final message = MessageEntity(
-      id: messageId,
       senderId: senderId,
       receiverId: receiverId,
       message: text,
@@ -155,5 +155,9 @@ class ChatController extends GetxController {
         'userId': authController.user.value.id
       });
     }
+  }
+
+  void joinChatRoom(String roomId) {
+    _socketService.sendMessage('joinRoom', roomId);
   }
 }

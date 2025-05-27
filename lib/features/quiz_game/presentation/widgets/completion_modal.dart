@@ -157,7 +157,7 @@ class CompletionModal extends StatelessWidget {
               const SizedBox(height: 20),
               ListView.builder(
                 shrinkWrap: true,
-                itemCount: questions.length,
+                itemCount: 4,
                 itemBuilder: (context, index) {
                   final quiz = questions[index];
                   final gameId = controller.quizList.length > index
