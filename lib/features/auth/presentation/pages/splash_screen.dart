@@ -24,6 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
     await authController.getProfile(); // ensure it completes
 
     if (authController.isLoggedIn.value) {
+      await authController.addFcmToken();
       Get.offAllNamed(AppRoutes.home);
     } else {
       Get.offAllNamed(AppRoutes.login);

@@ -56,6 +56,12 @@ class CatGameScreen extends GetView<CatGameController> {
                   const SizedBox(width: 16),
                   Text('🧡 ${controller.orangePoints.value}',
                       style: const TextStyle(fontSize: 20)),
+                  const SizedBox(width: 12),
+                  IconButton(
+                    onPressed: () {
+                      Get.toNamed(AppRoutes.schedule_offer);
+                    },
+                    icon: Icon(Icons.schedule, color: Colors.white,))
                 ],
               ),
             ),

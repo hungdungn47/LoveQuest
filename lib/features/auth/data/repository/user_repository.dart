@@ -100,4 +100,14 @@ class UserRepositoryImpl implements UserRepository {
       return DataFailed(Exception('Update user failed'));
     }
   }
+
+  @override
+  Future<DataState<Map<String, dynamic>>> addToken({required String newToken}) async {
+    try {
+      Map<String, dynamic> result = await _userApiService.addToken(newToken: newToken);
+      return DataSuccess(result);
+    } catch (e) {
+      return DataFailed(Exception('Add token failed'));
+    }
+  }
 }

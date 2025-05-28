@@ -1,4 +1,5 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -6,6 +7,7 @@ import 'package:lottie/lottie.dart';
 import 'package:love_quest/features/film/film.controller.dart';
 import 'package:video_player/video_player.dart';
 
+import '../../core/config/routes.dart';
 import '../../core/config/theme.dart';
 import '../../widgets/Appbar.dart';
 
@@ -13,6 +15,30 @@ class FilmPage extends GetView<FilmController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(CupertinoIcons.back, color: Colors.white),
+          onPressed: () => Get.back(),
+        ),
+        title: const Text(
+          'LoveQuest',
+          style: TextStyle(
+            fontSize: 28,
+            fontFamily: 'Kaushan',
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: AppColors.primary,
+        elevation: 0,
+        actions: [
+          IconButton(
+              onPressed: () {
+                Get.toNamed(AppRoutes.schedule_offer);
+              },
+              icon: Icon(Icons.schedule, color: Colors.white,))
+        ],
+      ),
       body: Obx(() {
         if (controller.isVideoInitialized.value) {
           return SingleChildScrollView(

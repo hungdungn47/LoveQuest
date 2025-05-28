@@ -102,7 +102,7 @@ class ChatController extends GetxController {
     messages.insert(0, message);
     messageController.clear();
 
-    _socketService.sendMessage('sendMessage', message.toJson());
+    // _socketService.sendMessage('sendMessage', message.toJson());
 
     // If using Firebase as backup:
     // FirebaseFirestore.instance.collection('messages').doc(messageId).set(message.toJson());
@@ -118,12 +118,12 @@ class ChatController extends GetxController {
       );
       conversations.sort((a, b) => b.latestCreatedAt!.compareTo(a.latestCreatedAt!));
     } else {
-      conversations.add(ConversationEntity(
-        roomId: message.roomId,
-        senderId: message.senderId,
-        receiverId: message.receiverId,
-        latestCreatedAt: message.createdAt,
-      ));
+      // conversations.add(ConversationEntity(
+      //   roomId: message.roomId,
+      //   sender: message.se,
+      //   receiverId: message.receiverId,
+      //   latestCreatedAt: message.createdAt,
+      // ));
     }
   }
 

@@ -19,9 +19,9 @@ class LightningQuizScreen extends GetView<LightningQuizController> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(CupertinoIcons.back, color: Colors.white),
-          onPressed: () => Get.offAllNamed(AppRoutes.home),
+          onPressed: () => Get.back(),
         ),
-        title: Text(
+        title: const Text(
           'LoveQuest',
           style: TextStyle(
             fontSize: 28,
@@ -32,6 +32,13 @@ class LightningQuizScreen extends GetView<LightningQuizController> {
         ),
         backgroundColor: AppColors.primary,
         elevation: 0,
+        actions: [
+          IconButton(
+              onPressed: () {
+                Get.toNamed(AppRoutes.schedule_offer);
+              },
+              icon: Icon(Icons.schedule, color: Colors.white,))
+        ],
       ),
       body: Stack(
         children: [
@@ -155,7 +162,7 @@ class LightningQuizScreen extends GetView<LightningQuizController> {
                         questions: controller.quizList,
                         answers: controller.answers,
                         onProceed: () {
-                          Get.offNamed(AppRoutes.film);
+                          Get.offNamed(AppRoutes.draw_game);
                         }, opponentAnswers: controller.opponentAnswers,
                       ),
                     ),
