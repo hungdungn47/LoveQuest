@@ -19,9 +19,11 @@ class UpdateParams {
   String? address;
   String? email;
   String? gender;
+  String? avatar;
   List<String>? interests;
+  List<String>? profileImages;
 
-  UpdateParams({this.job, this.country, this.address, this.email, this.gender, this.interests});
+  UpdateParams({this.avatar, this.profileImages, this.job, this.country, this.address, this.email, this.gender, this.interests});
   Map<String, dynamic> toJson() {
     return {
       if (job != null) 'job': job,
@@ -30,6 +32,8 @@ class UpdateParams {
       if (email != null) 'email': email,
       if (gender != null) 'gender': gender,
       if (interests != null) 'interests': interests,
+      if (profileImages != null) 'profileImages': profileImages,
+      if (avatar != null) 'avatar': avatar
     };
   }
 }

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -25,6 +26,28 @@ class ProfilePage extends GetView<ProfileController> {
               child: SingleChildScrollView(
               child: Column(
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Avatar", style: Styles.bigTextW800),
+                        const SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Obx(
+                            () => CircleAvatar(
+                                radius: 70, // Điều chỉnh kích thước avatar
+                                backgroundColor: Colors.grey[200],
+                                backgroundImage: CachedNetworkImageProvider(controller.avatar.value),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                   PhotoPage(),
                   InterestWidget(),
                   InfoPage(),

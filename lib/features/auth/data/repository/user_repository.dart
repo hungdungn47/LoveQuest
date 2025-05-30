@@ -22,7 +22,18 @@ class UserRepositoryImpl implements UserRepository {
         fullName: result['fullName'] ?? '',
         id: result['_id'] ?? '',
         avatar: result['avatar'] ?? '',
-        gender: result['gender'] ?? ''
+        gender: result['gender'] ?? '',
+        job: result['job'] ?? '',
+        address: result['address'] ?? '',
+        country: result['country'] ?? '',
+        interests: (result['interests'] as List<dynamic>?)
+            ?.map((e) => e.toString())
+            .toList() ??
+            [],
+        profileImages: (result['profileImages'] as List<dynamic>?)
+            ?.map((e) => e.toString())
+            .toList() ??
+            [],
       );
       return DataSuccess(user);
     } catch (e) {
@@ -94,6 +105,7 @@ class UserRepositoryImpl implements UserRepository {
     // TODO: implement updateUser
     try {
       Map<String, dynamic> result = await _userApiService.updateUser(updateData: params.toJson());
+      logger.i('Updated user: $result');
       final UserEntity user = UserEntity.fromJson(result);
       return DataSuccess(user);
     } catch (e) {

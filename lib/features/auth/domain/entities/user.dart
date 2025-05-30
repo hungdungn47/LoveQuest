@@ -10,6 +10,8 @@ class UserEntity {
   String? avatar;
   String? address;
   int? limitMatch;
+  List<String>? profileImages;
+  List<String>? interests;
 
   UserEntity({
     this.id,
@@ -23,6 +25,8 @@ class UserEntity {
     this.avatar,
     this.address,
     this.limitMatch,
+    this.profileImages,
+    this.interests
   });
 
   // fromJson factory constructor
@@ -38,6 +42,8 @@ class UserEntity {
       country: json['country'] as String?,
       avatar: json['avatar'] as String?,
       address: json['address'] as String?,
+      profileImages: json['profileImages'] as List<String>?,
+      interests: json['interests'] as List<String>?,
       limitMatch: json['limitMatch'] is int ? json['limitMatch'] : int.tryParse(json['limitMatch']?.toString() ?? ''),
     );
   }
@@ -55,6 +61,8 @@ class UserEntity {
       if (country != null) 'country': country,
       if (avatar != null) 'avatar': avatar,
       if (address != null) 'address': address,
+      if (interests != null) 'interests': interests,
+      if (profileImages != null) 'profileImages': profileImages,
       if (limitMatch != null) 'limitMatch': limitMatch,
     };
   }

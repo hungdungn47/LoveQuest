@@ -21,7 +21,10 @@ class SelectInterestPage extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Get.back(),
+        onPressed: () {
+          controller.updateInterests();
+          Get.back();
+        },
         child: Icon(Icons.check),
       ),
     );

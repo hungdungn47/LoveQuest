@@ -93,10 +93,12 @@ class UserApiServiceImpl implements UserApiService {
   @override
   Future<Map<String, dynamic>> updateUser({required Map<String, dynamic> updateData}) async {
     try {
+      logger.i('Updating user: ${updateData}');
       final response = await _client.patch('/users/me', data: updateData);
+      logger.i('Updating user: ${response.data}');
       return response.data;
     } catch (e) {
-      logger.e('Update user error: $e');
+      logger.e('Update user error: ${e.toString()}');
       rethrow;
     }
   }
