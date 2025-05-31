@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:love_quest/core/config/events.dart';
 import 'package:love_quest/core/global/global.controller.dart';
 import 'package:love_quest/core/socket/socket_service.dart';
@@ -27,6 +28,7 @@ class FilmController extends GetxController {
   var isUser1Speaking = false.obs;
   var isUser2Speaking = false.obs;
   RxString filmName = ''.obs;
+  RxString filmUrl = ''.obs;
   late Signaling signaling;
 
   late final String userId;
@@ -37,46 +39,21 @@ class FilmController extends GetxController {
     super.onInit();
 
     handleInit();
-    // _videoController = VideoPlayerController.networkUrl(Uri.parse(
-    //     'https://ec93-14-191-139-167.ngrok-free.app/upload/stream/1745060757236-test.mp4')
-    // );
-    // _videoController.initialize().then((_) {
-    //   isVideoInitialized.value = true;
-    //   // videoController.setLooping(true);
-    // });
-    //
-    // _socketService.connect();
-    //
-    // _socketService.sendMessage(EventName.joinRoom, "123456");
-    //
-    // Timer.periodic(Duration(seconds: 3), (timer) {
-    //   isUser1Speaking.value = !isUser1Speaking.value;
-    //   isUser2Speaking.value = !isUser1Speaking.value;
-    // });
-    //
-    // rotatePortrait();
-    //
-    // listenFilmControlResponse();
   }
 
   Future<void> handleInit() async {
     userId = _authController.user.value.id!;
     peerId = _globalController.peerId.value;
     final data = Get.arguments;
-    // final String filmUrl = data["filmUrl"];
-    // final String duration = data["duration"];
-    // filmName.value = data["filmName"];
+    final String url = data["filmUrl"];
+    filmUrl.value = url;
+    filmName.value = data["filmName"];
     _videoController = VideoPlayerController.networkUrl(Uri.parse(
-        'https://2fae-222-252-54-144.ngrok-free.app/api/upload/stream/1747361622637-test.mp4'))
+        'https://2fae-222-252-54-144.ngrok-free.app/api/upload/stream/${filmName.value}'))
       ..setVolume(1);
     _videoController.initialize().then((_) {
       isVideoInitialized.value = true;
     });
-
-    // Timer.periodic(Duration(seconds: 3), (timer) {
-    //   isUser1Speaking.value = !isUser1Speaking.value;
-    //   isUser2Speaking.value = !isUser1Speaking.value;
-    // });
 
     rotatePortrait();
 
@@ -86,17 +63,11 @@ class FilmController extends GetxController {
 
     noiseAnalyst();
 
-
-
     await _initSignaling();
 
     if (_authController.user.value.gender == "MALE") {
       makeCall();
     }
-
-    // if (_globalController.gender.value == "MALE") {
-    //   makeCall();
-    // }
   }
 
   void receiveOpponentSpeaking() {

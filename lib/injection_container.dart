@@ -10,6 +10,8 @@ import 'package:love_quest/features/auth/presentation/controllers/auth_controlle
 import 'package:love_quest/features/chat/data/datasources/chat_api_service.dart';
 import 'package:love_quest/features/chat/data/repository/chat_repository_impl.dart';
 import 'package:love_quest/features/chat/domain/repository/chat_repository.dart';
+import 'package:love_quest/features/film_choosing/services/filmChoosingService.dart';
+import 'package:love_quest/features/film_choosing/services/filmChoosingServiceIpm.dart';
 
 import 'core/global/global.controller.dart';
 import 'features/auth/domain/usecases/get_profile.dart';
@@ -18,7 +20,7 @@ import 'features/auth/domain/usecases/signup.dart';
 Future<void> initializeDependencies() async {
   final dioClient = DioClient.instance;
   dioClient.configureDio(
-    baseUrl: 'http://192.168.1.2:3000/api',
+    baseUrl: 'http://10.0.2.2:3000/api',
     defaultHeaders: {
       'Content-Type': 'application/json',
     },
@@ -31,6 +33,7 @@ Future<void> initializeDependencies() async {
   Get.put<SignupUseCase>(SignupUseCase(Get.find<UserRepository>()));
   Get.put<GetProfileUseCase>(GetProfileUseCase(Get.find<UserRepository>()));
   Get.put<UpdateUserUseCase>(UpdateUserUseCase(Get.find<UserRepository>()));
+  Get.put<IFilmChoosingService>(FilmChoosingServiceImp(Get.find<DioClient>()));
 
   Get.put<ChatApiService>(ChatApiService(Get.find<DioClient>()));
   Get.put<ChatRepository>(ChatRepositoryImpl(Get.find<ChatApiService>()));

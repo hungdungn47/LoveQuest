@@ -1,10 +1,14 @@
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:love_quest/core/config/events.dart';
 import 'package:love_quest/core/config/routes.dart';
 import 'package:love_quest/core/global/global.controller.dart';
 import 'package:love_quest/core/socket/socket_service.dart';
 import 'package:love_quest/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:love_quest/features/film_choosing/services/filmChoosingService.dart';
+
+import 'entity/film.dart';
 
 class FilmChoosingController extends GetxController {
   RxInt current = 0.obs;
@@ -36,6 +40,20 @@ class FilmChoosingController extends GetxController {
 
   GlobalController get globalController => _globalController;
 
+  final IFilmChoosingService apiService = Get.find<IFilmChoosingService>();
+
+  Rxn<List<String>> types = Rxn<List<String>>();
+
+  Rxn<List<Film>> recommendationFilms = Rxn<List<Film>>();
+
+  Rxn<List<Film>> films = Rxn<List<Film>>();
+
+  RxBool isLoading = false.obs;
+
+  RxBool isTypeChange = false.obs;
+
+  RxString currentType = ''.obs;
+
   @override
   void onInit() {
     // TODO: implement onInit
@@ -47,23 +65,51 @@ class FilmChoosingController extends GetxController {
   }
 
   Future<void> handleInit() async {
+    isLoading.value = true;
     await _socketService.connect();
     _socketService.sendMessage("joinRoom", "123456");
     // canChoose.value = _globalController.gender.value == 'FEMALE';
     canChoose.value = _authController.user.value.gender == 'FEMALE';
+    await loadData();
+    isLoading.value = false;
+  }
+
+  Future<void> loadData() async {
+    final results = await Future.wait([
+      apiService.getTypeOfFilm(),
+      apiService.getTopsFilm(),
+    ]);
+
+    types.value = results[0] as List<String>;
+
+    recommendationFilms.value = results[1] as List<Film>;
+
+    films.value = await apiService.getFilmByType(types.value![0]);
+
+    currentType.value = types.value![0];
+
+    print("Hello ${types.value}");
+    print("Hello1 ${recommendationFilms.value}");
+    print("Hello2 ${films.value}");
+  }
+
+  Future<void> changeType(String type) async {
+    isTypeChange.value = true;
+    currentType.value = type;
+    films.value = await apiService.getFilmByType(type);
+    isTypeChange.value = false;
   }
 
   void changeCurrentIndex(int index) {
     current.value = index;
   }
 
-  void handleChoosingFilm() {
+  void handleChoosingFilm(Film item) {
     _socketService.sendMessage(EventName.filmChoosing, {
       // "roomId": "123456",
       "roomId": _globalController.roomId.value,
-      "filmUrl": "1747361622637-test.mp4",
-      "duration": "1h20m",
-      "filmName": "Purple Heart",
+      "filmUrl": item.filmUrl,
+      "filmName": item.name,
     });
   }
 
@@ -71,12 +117,10 @@ class FilmChoosingController extends GetxController {
     _socketService.listenToMessages(EventName.filmChoosing, (data) {
       print("Choose Film Successfully");
       final String filmUrl = data["filmUrl"];
-      final String duration = data["duration"];
       final String filmName = data["filmName"];
-      print('Film Choosed - ${filmUrl} - ${duration} - ${filmName}');
+      print('Film Choosed - ${filmUrl} - ${filmName}');
       Get.toNamed(AppRoutes.film, arguments: {
         "filmUrl": filmUrl,
-        "duration": duration,
         "filmName": filmName
       });
     });
