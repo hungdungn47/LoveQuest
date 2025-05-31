@@ -21,26 +21,26 @@ class Signaling {
       {'url': 'stun:stun1.l.google.com:19302'},
       {'url': 'stun:stun2.l.google.com:19302'},
       {'url': 'stun:stun3.l.google.com:19302'},
-      { "urls": 'stun:stun.relay.metered.ca:80' },
+      { 'urls': 'stun:stun.relay.metered.ca:80' },
       {
-        "urls": 'turn:global.relay.metered.ca:80',
-        'username': 'ebab71399588129d876e05b9',
-        'credential': 'uRXYA6rx/QIb2UFn'
+        'urls': 'turn:global.relay.metered.ca:80',
+        'username': 'b226655a703310be48e5307f',
+        'credential': 'hLC09gO0BppIr7Sm'
       },
       {
         'urls': 'turn:global.relay.metered.ca:80?transport=tcp',
-        'username': 'ebab71399588129d876e05b9',
-        'credential': 'uRXYA6rx/QIb2UFn'
+        'username': 'b226655a703310be48e5307f',
+        'credential': 'hLC09gO0BppIr7Sm'
       },
       {
         'urls': 'turn:global.relay.metered.ca:443',
-        'username': 'ebab71399588129d876e05b9',
-        'credential': 'uRXYA6rx/QIb2UFn'
+        'username': 'b226655a703310be48e5307f',
+        'credential': 'hLC09gO0BppIr7Sm'
       },
       {
         'urls': 'turns:global.relay.metered.ca:443?transport=tcp',
-        'username': 'ebab71399588129d876e05b9',
-        'credential': 'uRXYA6rx/QIb2UFn'
+        'username': 'b226655a703310be48e5307f',
+        'credential': 'hLC09gO0BppIr7Sm'
       }
     ],
   };
