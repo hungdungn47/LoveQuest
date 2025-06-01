@@ -13,12 +13,24 @@ abstract class UserApiService {
   Future<Map<String, dynamic>> verifyOtp({required String email, required String otp});
   Future<Map<String, dynamic>> updateUser({required Map<String, dynamic> updateData});
   Future<Map<String, dynamic>> addToken({required String newToken});
+  Future<Map<String, dynamic>> getOtherUser({required String userId});
 }
 
 class UserApiServiceImpl implements UserApiService {
   final DioClient _client;
   UserApiServiceImpl(this._client);
   final logger = Logger();
+  @override
+  Future<Map<String, dynamic>> getOtherUser({required String userId}) async {
+    try {
+      final response = await this._client.get('/users', queryParameters: {"userId" : userId});
+      return response.data;
+    } catch (e) {
+      logger.e('Get other user profile error: $e');
+      rethrow;
+    }
+  }
+
   @override
   Future<Map<String, dynamic>> getUserInfo() async {
     try {

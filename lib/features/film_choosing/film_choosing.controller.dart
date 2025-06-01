@@ -67,7 +67,7 @@ class FilmChoosingController extends GetxController {
   Future<void> handleInit() async {
     isLoading.value = true;
     await _socketService.connect();
-    _socketService.sendMessage("joinRoom", "123456");
+    _socketService.sendMessage("joinRoom", "680a508b6a2a0259197145f2");
     // canChoose.value = _globalController.gender.value == 'FEMALE';
     canChoose.value = _authController.user.value.gender == 'FEMALE';
     await loadData();

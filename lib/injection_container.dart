@@ -16,6 +16,7 @@ import 'package:love_quest/features/schedule/domain/data/schedule_api_service.da
 
 import 'core/ads/ads_service.dart';
 import 'core/global/global.controller.dart';
+import 'features/auth/domain/usecases/getOtherUser.dart';
 import 'features/auth/domain/usecases/get_profile.dart';
 import 'features/auth/domain/usecases/signup.dart';
 
@@ -36,6 +37,7 @@ Future<void> initializeDependencies() async {
   Get.put<SignupUseCase>(SignupUseCase(Get.find<UserRepository>()));
   Get.put<GetProfileUseCase>(GetProfileUseCase(Get.find<UserRepository>()));
   Get.put<UpdateUserUseCase>(UpdateUserUseCase(Get.find<UserRepository>()));
+  Get.put<GetOtherUserUseCase>(GetOtherUserUseCase(Get.find<UserRepository>()));
   Get.put<IFilmChoosingService>(FilmChoosingServiceImp(Get.find<DioClient>()));
   Get.put<AdsService>(AdsService()).initAds();
 

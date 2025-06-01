@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:love_quest/core/config/constants.dart';
 import 'package:love_quest/features/film/film.controller.dart';
 import 'package:love_quest/widgets/filmLoading.dart';
 import 'package:video_player/video_player.dart';
@@ -244,7 +245,7 @@ class FilmPage extends GetView<FilmController> {
                                 CircleAvatar(
                                   radius: 64,
                                   backgroundImage: NetworkImage(
-                                    'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/20240719_YOONA_3rd_Blue_Dragon_Series_Awards.jpg/960px-20240719_YOONA_3rd_Blue_Dragon_Series_Awards.jpg',
+                                    controller.user.avatar ?? Constant.defaultAvatar,
                                   ),
                                 ),
                                 Positioned(
@@ -292,7 +293,7 @@ class FilmPage extends GetView<FilmController> {
                                 CircleAvatar(
                                   radius: 64,
                                   backgroundImage: NetworkImage(
-                                    'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/20240719_YOONA_3rd_Blue_Dragon_Series_Awards.jpg/960px-20240719_YOONA_3rd_Blue_Dragon_Series_Awards.jpg',
+                                    controller.otherInfo.value!.avatar,
                                   ),
                                 ),
                                 Positioned(

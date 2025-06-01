@@ -2,6 +2,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:love_quest/core/config/routes.dart';
 import 'package:love_quest/features/home/presentation/home.controller.dart';
 import 'package:love_quest/features/home/widgets/PageViewItem.dart';
 
@@ -214,7 +215,8 @@ class HomePageView extends StatelessWidget {
                             GestureDetector(
                               onTap: () {
                                 // controller.handleFindPartner();
-                                controller.handleShowAds();
+                                // controller.handleShowAds();
+                                Get.toNamed(AppRoutes.filmChoosing);
                               },
                               child: Container(
                                 padding: EdgeInsets.symmetric(

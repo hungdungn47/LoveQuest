@@ -6,15 +6,20 @@ import 'package:get_storage/get_storage.dart';
 import 'package:love_quest/core/config/events.dart';
 import 'package:love_quest/core/global/global.controller.dart';
 import 'package:love_quest/core/socket/socket_service.dart';
+import 'package:love_quest/features/auth/domain/entities/user.dart';
 import 'package:love_quest/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:noise_meter/noise_meter.dart';
 import 'package:video_player/video_player.dart';
 
+import '../../core/resources/data_state.dart';
+import '../auth/data/models/response_user.dart';
+import '../auth/domain/usecases/getOtherUser.dart';
 import '../video_call/signaling.dart';
 import 'enum/index.dart';
 
 class FilmController extends GetxController {
   late VideoPlayerController _videoController;
+  Rxn<ResponseUser> otherInfo = Rxn<ResponseUser>();
   RxBool isMic1On = false.obs;
   RxBool isMic2On = false.obs;
   RxBool isVideoInitialized = false.obs;
@@ -30,6 +35,7 @@ class FilmController extends GetxController {
   RxString filmName = ''.obs;
   RxString filmUrl = ''.obs;
   late Signaling signaling;
+  UserEntity get user => _authController.user.value;
 
   late final String userId;
   late final String peerId;
@@ -49,7 +55,7 @@ class FilmController extends GetxController {
     filmUrl.value = url;
     filmName.value = data["filmName"];
     _videoController = VideoPlayerController.networkUrl(Uri.parse(
-        'https://2fae-222-252-54-144.ngrok-free.app/api/upload/stream/${filmName.value}'))
+        'https://2315-2001-ee0-4a6e-8b10-3db7-8a28-18b0-ae06.ngrok-free.app/api/upload/stream/${filmName.value}'))
       ..setVolume(1);
     _videoController.initialize().then((_) {
       isVideoInitialized.value = true;
@@ -65,8 +71,22 @@ class FilmController extends GetxController {
 
     await _initSignaling();
 
+    otherInfo.value = await getOtherUserProfile(peerId);
+
     if (_authController.user.value.gender == "MALE") {
       makeCall();
+    }
+  }
+
+  Future<ResponseUser?> getOtherUserProfile(String userId) async {
+    try{
+      final GetOtherUserUseCase getOtherUserUseCase = Get.find<GetOtherUserUseCase>();
+      final result = await getOtherUserUseCase.call(UserIdParams(userId));
+      if(result is DataSuccess) {
+        return result.data;
+      }
+    } catch (e) {
+      return null;
     }
   }
 

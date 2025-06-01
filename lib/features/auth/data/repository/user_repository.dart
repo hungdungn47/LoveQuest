@@ -7,11 +7,27 @@ import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'package:love_quest/features/auth/domain/usecases/update_user.dart';
 
+import '../models/response_user.dart';
+
 class UserRepositoryImpl implements UserRepository {
   final UserApiService _userApiService;
   final localStorage = LocalStorage();
   final logger = Logger();
   UserRepositoryImpl(this._userApiService);
+
+  @override
+  Future<DataState<ResponseUser>> getOtherUser({required String userId}) async {
+    try {
+      Map<String, dynamic> result = await _userApiService.getOtherUser(userId: userId);
+      print("Test ${result}");
+      final ResponseUser user = ResponseUser.fromJson(result);
+      return DataSuccess(user);
+    } catch (e) {
+      logger.e('Get user profile error: $e');
+      return DataFailed(Exception(e));
+    }
+  }
+
   @override
   Future<DataState<UserEntity>> getUserInfo() async {
     try {
