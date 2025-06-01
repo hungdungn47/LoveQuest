@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_painter_v2/flutter_painter.dart';
 import 'package:get/get.dart';
@@ -5,6 +6,8 @@ import 'package:love_quest/core/config/theme.dart';
 import 'package:love_quest/features/draw_game/presentations/draw_game.controller.dart';
 import 'package:love_quest/features/draw_game/presentations/test.page.dart';
 import 'package:love_quest/widgets/Appbar.dart';
+
+import '../../../core/config/routes.dart';
 
 class DrawGameView extends GetView<DrawGameController> {
   const DrawGameView({super.key});
@@ -17,13 +20,37 @@ class DrawGameView extends GetView<DrawGameController> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: true,
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(CupertinoIcons.back, color: Colors.white),
+            onPressed: () => Get.back(),
+          ),
+          title: const Text(
+            'LoveQuest',
+            style: TextStyle(
+              fontSize: 28,
+              fontFamily: 'Kaushan',
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: AppColors.primary,
+          elevation: 0,
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Get.toNamed(AppRoutes.schedule_offer);
+                },
+                icon: Icon(Icons.schedule, color: Colors.white,))
+          ],
+        ),
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AppBarCustomize(
-                title: 'Gaming Room',
-              ),
+              // AppBarCustomize(
+              //   title: 'Gaming Room',
+              // ),
               SizedBox(
                 height: 32,
               ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:love_quest/core/config/theme.dart';
+import 'package:love_quest/features/auth/domain/entities/user.dart';
 import 'package:love_quest/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:love_quest/features/chat/presentation/chat_controller.dart';
 import 'package:love_quest/features/chat/domain/entities/message.dart';
@@ -9,21 +10,21 @@ import 'package:love_quest/features/chat/presentation/chat_screen.dart';
 
 class ChatConversationScreen extends StatelessWidget {
   final ConversationEntity conversation;
-  final String userName;
+  final String otherUserName;
   final String? profilePicture;
   final bool isOnline;
 
   ChatConversationScreen({
     super.key,
     required this.conversation,
-    required this.userName,
+    required this.otherUserName,
     this.profilePicture,
     required this.isOnline,
   }) {
     final ChatController chatController = Get.put(ChatController());
     final AuthController authController = Get.find<AuthController>();
 
-    chatController.loadMessages(conversation.roomId!, getOtherUserId(conversation));
+    chatController.loadMessages(conversation.roomId!, getOtherUserId(conversation)!);
   }
 
   @override
@@ -37,18 +38,26 @@ class ChatConversationScreen extends StatelessWidget {
         title: Row(
           children: [
             CircleAvatar(
-              radius: 20,
+              radius: 30,
               backgroundColor: AppColors.primary.withOpacity(0.1),
               child: profilePicture != null
-                  ? ClipOval(child: Image.network(profilePicture!, fit: BoxFit.cover))
+                  ? ClipOval(
+                child: Image.network(
+                  profilePicture!,
+                  width: 40, // match diameter (2 * radius)
+                  height: 40,
+                  fit: BoxFit.cover, // important
+                ),
+              )
                   : Icon(Icons.person, color: AppColors.primary),
             ),
+
             const SizedBox(width: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  userName,
+                  otherUserName,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -129,7 +138,7 @@ class ChatConversationScreen extends StatelessWidget {
                       chatController.sendMessage(
                         chatController.messageController.text,
                         conversation.roomId!,
-                        getOtherUserId(conversation)
+                        getOtherUserId(conversation)!
                       );
                     },
                   ),

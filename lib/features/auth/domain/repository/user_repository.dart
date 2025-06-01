@@ -12,4 +12,5 @@ abstract interface class UserRepository {
   Future<DataState<UserEntity>> getUserInfo();
   Future<DataState<Map<String, dynamic>>> verifyOtp({required String email, required String otp});
   Future<DataState<UserEntity>> updateUser(UpdateParams params);
+  Future<DataState<Map<String, dynamic>>> addToken({required String newToken});
 }

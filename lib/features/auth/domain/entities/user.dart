@@ -2,6 +2,7 @@ class UserEntity {
   String? id;
   String? fullName;
   String? nickName;
+  String? userName;
   String? email;
   String? job;
   String? gender;
@@ -14,6 +15,7 @@ class UserEntity {
     this.id,
     this.fullName,
     this.nickName,
+    this.userName,
     this.email,
     this.job,
     this.gender,
@@ -26,9 +28,10 @@ class UserEntity {
   // fromJson factory constructor
   factory UserEntity.fromJson(Map<String, dynamic> json) {
     return UserEntity(
-      id: json['id'] as String?,
+      id: json['_id'] as String?,
       fullName: json['fullName'] as String?,
       nickName: json['nickName'] as String?,
+      userName: json['userName'] as String?,
       email: json['email'] as String?,
       job: json['job'] as String?,
       gender: json['gender'] as String?,
@@ -42,9 +45,10 @@ class UserEntity {
   // toJson method
   Map<String, dynamic> toJson() {
     return {
-      if (id != null) 'id': id,
+      if (id != null) '_id': id,
       if (fullName != null) 'fullName': fullName,
       if (nickName != null) 'nickName': nickName,
+      if (userName != null) 'userName': userName,
       if (email != null) 'email': email,
       if (job != null) 'job': job,
       if (gender != null) 'gender': gender,

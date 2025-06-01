@@ -4,12 +4,14 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:love_quest/core/config/routes.dart';
 import 'package:love_quest/core/config/theme.dart';
+import 'package:love_quest/core/firebase/firebase_messaging_service.dart';
 import 'package:love_quest/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:love_quest/injection_container.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await FirebaseMessagingService().init();
   await GetStorage.init();
   await initializeDependencies();
 

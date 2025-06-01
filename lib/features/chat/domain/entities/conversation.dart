@@ -1,20 +1,22 @@
+import 'package:love_quest/features/auth/domain/entities/user.dart';
+
 class ConversationEntity {
   String? roomId;
-  String? senderId;
-  String? receiverId;
+  UserEntity? sender;
+  UserEntity? receiver;
   DateTime? latestCreatedAt;
 
   ConversationEntity({
     this.roomId,
-    this.senderId,
-    this.receiverId,
+    this.sender,
+    this.receiver,
     this.latestCreatedAt
   });
 
   factory ConversationEntity.fromJson(Map<String, dynamic> json) {
     return ConversationEntity(
-      senderId: json['fromUser'],
-      receiverId: json['toUser'],
+      sender: json['fromUser'] != null ? UserEntity.fromJson(json['fromUser']) : null,
+      receiver: json['toUser'] != null ? UserEntity.fromJson(json['toUser']) : null,
       roomId: json['roomId'],
       latestCreatedAt: json['latestCreatedAt'] != null ? DateTime.parse(json['latestCreatedAt']) : null,
     );
@@ -22,8 +24,8 @@ class ConversationEntity {
 
   Map<String, dynamic> toJson() {
     return {
-      'fromUser': senderId,
-      'toUser': receiverId,
+      'fromUser': sender?.toJson(),
+      'toUser': receiver?.toJson(),
       'roomId': roomId,
       'latestCreatedAt': latestCreatedAt?.toIso8601String(),
     };
@@ -31,14 +33,14 @@ class ConversationEntity {
 
   ConversationEntity copyWith({
     String? roomId,
-    String? senderId,
-    String? receiverId,
+    UserEntity? sender,
+    UserEntity? receiver,
     DateTime? latestCreatedAt,
   }) {
     return ConversationEntity(
       roomId: roomId ?? this.roomId,
-      senderId: senderId ?? this.senderId,
-      receiverId: receiverId ?? this.receiverId,
+      sender: sender ?? this.sender,
+      receiver: receiver ?? this.receiver,
       latestCreatedAt: latestCreatedAt ?? this.latestCreatedAt,
     );
   }

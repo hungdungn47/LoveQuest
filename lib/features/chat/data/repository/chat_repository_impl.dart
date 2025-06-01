@@ -3,9 +3,10 @@ import 'package:love_quest/features/chat/data/datasources/chat_api_service.dart'
 import 'package:love_quest/features/chat/domain/entities/conversation.dart';
 import 'package:love_quest/features/chat/domain/entities/message.dart';
 import 'package:love_quest/features/chat/domain/repository/chat_repository.dart';
-
+import 'package:logger/logger.dart';
 class ChatRepositoryImpl implements ChatRepository {
   final ChatApiService _chatApiService;
+  final Logger logger = Logger();
   ChatRepositoryImpl(this._chatApiService);
   @override
   Future<DataState<List<ConversationEntity>>> getConversations() async {
@@ -14,6 +15,9 @@ class ChatRepositoryImpl implements ChatRepository {
       List<ConversationEntity> conversationList = data.map((json) {
         return ConversationEntity.fromJson(json);
       }).toList();
+      for(var conversation in conversationList) {
+        logger.i('Message from ${conversation.sender?.userName} and to ${conversation.receiver?.userName}');
+      }
       return DataSuccess(conversationList);
     } catch (e) {
       return DataFailed(Exception('Error getting conversation: $e'));

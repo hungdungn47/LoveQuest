@@ -1,9 +1,11 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:love_quest/core/config/routes.dart';
 import 'package:love_quest/core/resources/data_state.dart';
 import 'package:love_quest/core/storage/local_storage.dart';
 import 'package:love_quest/features/auth/domain/entities/user.dart';
+import 'package:love_quest/features/auth/domain/repository/user_repository.dart';
 import 'package:love_quest/features/auth/domain/usecases/get_profile.dart';
 import 'package:love_quest/features/auth/domain/usecases/signup.dart';
 import 'package:love_quest/features/auth/domain/usecases/login.dart';
@@ -50,6 +52,17 @@ class AuthController extends GetxController {
       isLoggedIn.value = false;
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> addFcmToken() async {
+    try {
+      final UserRepository userRepository = Get.find<UserRepository>();
+      String? fcmToken = await FirebaseMessaging.instance.getToken();
+      logger.i('FCM token: $fcmToken');
+      final result = await userRepository.addToken(newToken: fcmToken!);
+    } catch (e) {
+      logger.e('Failed adding fcm token');
     }
   }
 

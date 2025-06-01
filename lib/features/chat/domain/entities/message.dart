@@ -59,5 +59,4 @@ class MessageEntity {
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
-
 }

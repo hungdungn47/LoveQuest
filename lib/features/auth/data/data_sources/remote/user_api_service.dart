@@ -12,6 +12,7 @@ abstract class UserApiService {
   Future<Map<String, dynamic>> getUserInfo();
   Future<Map<String, dynamic>> verifyOtp({required String email, required String otp});
   Future<Map<String, dynamic>> updateUser({required Map<String, dynamic> updateData});
+  Future<Map<String, dynamic>> addToken({required String newToken});
 }
 
 class UserApiServiceImpl implements UserApiService {
@@ -96,6 +97,19 @@ class UserApiServiceImpl implements UserApiService {
       return response.data;
     } catch (e) {
       logger.e('Update user error: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> addToken({required String newToken}) async {
+    try {
+      final response = await _client.patch('/users/add-token', data: {
+        'newToken': newToken
+      });
+      return response.data;
+    } catch(e) {
+      logger.e('Adding FCM token error: $e');
       rethrow;
     }
   }

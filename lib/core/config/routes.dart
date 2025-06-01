@@ -24,6 +24,7 @@ import 'package:love_quest/features/quiz_game/presentation/lightning_quiz.bindin
 import 'package:love_quest/features/quiz_game/presentation/lightning_quiz.screen.dart';
 import 'package:love_quest/features/chat/presentation/chat.binding.dart';
 import 'package:love_quest/features/schedule/presentation/schedule_binding.dart';
+import 'package:love_quest/features/schedule/presentation/schedule_offer_screen.dart';
 import 'package:love_quest/features/schedule/presentation/schedule_screen.dart';
 import 'package:love_quest/features/test/test.binding.dart';
 import 'package:love_quest/features/video_call/call_binding.dart';
@@ -50,6 +51,7 @@ class AppRoutes {
   static const String chat = '/chat';
   static const String cat_game = '/cat-game';
   static const String schedule = '/schedule';
+  static const String schedule_offer = '/schedule_offer';
   static const String splash = '/splash';
   static const String otp = '/otp';
 
@@ -117,5 +119,9 @@ class AppRoutes {
       page: () => TestPage(),
       binding: TestBindings(),
     ),
+    GetPage(
+      name: schedule_offer,
+      page: () => ScheduleOfferScreen()
+    )
   ];
 }

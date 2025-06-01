@@ -1,6 +1,11 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:love_quest/core/global/global.controller.dart';
+import 'package:love_quest/core/socket/socket_service.dart';
+import 'package:love_quest/features/schedule/domain/data/schedule_api_service.dart';
 import '../domain/models/game_schedule.dart';
+import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
 
 class ScheduleController extends GetxController {
   final RxList<GameSchedule> schedules = <GameSchedule>[].obs;
@@ -9,11 +14,12 @@ class ScheduleController extends GetxController {
   final TextEditingController dateController = TextEditingController();
   final TextEditingController timeController = TextEditingController();
   final RxString selectedGameType = ''.obs;
-
+  final Logger logger = Logger();
   @override
   void onInit() {
     super.onInit();
     loadSchedules();
+    _connectSocket();
   }
 
   @override
@@ -26,32 +32,13 @@ class ScheduleController extends GetxController {
   Future<void> loadSchedules() async {
     try {
       isLoading.value = true;
-      // TODO: Implement API call to load schedules
-      // For now, using sample data
-      schedules.value = [
-        GameSchedule(
-          id: '1',
-          userId: 'current_user',
-          partnerId: 'partner1',
-          partnerName: 'Sarah Johnson',
-          partnerAvatar: null,
-          scheduledTime: DateTime.now().add(const Duration(days: 1)),
-          gameType: 'Lightning Quiz',
-          status: 'pending',
-          createdAt: DateTime.now(),
-        ),
-        GameSchedule(
-          id: '2',
-          userId: 'current_user',
-          partnerId: 'partner2',
-          partnerName: 'Michael Chen',
-          partnerAvatar: null,
-          scheduledTime: DateTime.now().add(const Duration(days: 2)),
-          gameType: 'Lightning Quiz',
-          status: 'accepted',
-          createdAt: DateTime.now(),
-        ),
-      ];
+      final ScheduleApiService apiService = Get.find<ScheduleApiService>();
+      final res = await apiService.getSchedules();
+      res.map((item) {
+        logger.i(item);
+      });
+      schedules.value = res;
+
     } catch (e) {
       error.value = e.toString();
     } finally {
@@ -59,65 +46,72 @@ class ScheduleController extends GetxController {
     }
   }
 
-  Future<void> createSchedule(String partnerId, String partnerName,
-      DateTime scheduledTime, String gameType) async {
-    try {
-      isLoading.value = true;
-      // TODO: Implement API call to create schedule
-      final newSchedule = GameSchedule(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        userId: 'current_user',
-        partnerId: partnerId,
-        partnerName: partnerName,
-        scheduledTime: scheduledTime,
-        gameType: gameType,
-        status: 'pending',
-        createdAt: DateTime.now(),
+  final GlobalController globalController = Get.find<GlobalController>();
+  final SocketService _socketService = SocketService();
+
+  var selectedDateTime = Rxn<DateTime>();
+  var isWaiting = false.obs;
+  var message = RxnString();
+
+  void _connectSocket() {
+
+    _socketService.listenToMessages('scheduleOffer', (data) {
+      final DateTime time = DateFormat('HH:mm dd/MM/yyyy').parse(data['scheduleAt']);
+      final String msg = data['message'];
+      selectedDateTime.value = time;
+      Get.dialog(
+        AlertDialog(
+          title: Text("Schedule request"),
+          content: Text("$msg\nLúc: ${DateFormat('HH:mm dd/MM').format(time)}"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                _respondToOffer(false, null);
+                Get.back();
+              },
+              child: Text("Decline"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _respondToOffer(true, time);
+                Get.back();
+              },
+              child: Text("Đồng ý"),
+            ),
+          ],
+        ),
       );
-      schedules.add(newSchedule);
-    } catch (e) {
-      error.value = e.toString();
-    } finally {
-      isLoading.value = false;
+    });
+
+    _socketService.listenToMessages('scheduleResponse', (data) {
+      isWaiting.value = false;
+      message.value = data['message'];
+    });
+  }
+
+  void sendOffer() {
+    if (selectedDateTime.value == null) return;
+
+    _socketService.sendMessage('scheduleOffer', {
+      'roomId': globalController.roomId.value,
+      'scheduleAt':  DateFormat('HH:mm dd/MM/yyyy').format(selectedDateTime.value!),
+      'message':
+      'Let\'s play at ${DateFormat('HH:mm dd/MM').format(selectedDateTime.value!)}!',
+    });
+
+    isWaiting.value = true;
+  }
+
+  void _respondToOffer(bool accepted, DateTime? time) {
+    if(accepted) {
+      message.value = 'The schedule has been confirmed. Looking forward to seeing you at the selected time!';
+    } else {
+      message.value = 'You have declined the invitation';
     }
-  }
-
-  Future<void> updateScheduleStatus(String scheduleId, String status) async {
-    try {
-      isLoading.value = true;
-      // TODO: Implement API call to update status
-      final index = schedules.indexWhere((s) => s.id == scheduleId);
-      if (index != -1) {
-        final schedule = schedules[index];
-        schedules[index] = GameSchedule(
-          id: schedule.id,
-          userId: schedule.userId,
-          partnerId: schedule.partnerId,
-          partnerName: schedule.partnerName,
-          partnerAvatar: schedule.partnerAvatar,
-          scheduledTime: schedule.scheduledTime,
-          gameType: schedule.gameType,
-          status: status,
-          createdAt: schedule.createdAt,
-          updatedAt: DateTime.now(),
-        );
-      }
-    } catch (e) {
-      error.value = e.toString();
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  Future<void> cancelSchedule(String scheduleId) async {
-    await updateScheduleStatus(scheduleId, 'cancelled');
-  }
-
-  Future<void> acceptSchedule(String scheduleId) async {
-    await updateScheduleStatus(scheduleId, 'accepted');
-  }
-
-  Future<void> rejectSchedule(String scheduleId) async {
-    await updateScheduleStatus(scheduleId, 'rejected');
+    _socketService.sendMessage('scheduleResponse', {
+      'roomId': globalController.roomId.value,
+      'accepted': accepted,
+      'scheduleAt':  DateFormat('HH:mm dd/MM/yyyy').format(selectedDateTime.value!),
+    });
   }
 }

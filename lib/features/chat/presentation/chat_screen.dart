@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:love_quest/core/config/theme.dart';
+import 'package:love_quest/features/auth/domain/entities/user.dart';
 import 'package:love_quest/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:love_quest/features/chat/domain/entities/conversation.dart';
 import 'package:love_quest/features/chat/presentation/chat_controller.dart';
@@ -57,8 +58,8 @@ class ChatScreen extends GetView<ChatController> {
                     conversation: conversation,
                     onTap: () {
                       controller.joinChatRoom(conversation.roomId!);
-                      final String otherUserId = getOtherUserId(conversation);
-                      Get.to(() => ChatConversationScreen(conversation: conversation, userName: otherUserId, isOnline: true,));
+                      final String otherUserName = getOtherUserName(conversation);
+                      Get.to(() => ChatConversationScreen(conversation: conversation, otherUserName: otherUserName, isOnline: true, profilePicture: getOtherUser(conversation).avatar,));
                     },
                   );
                 },
@@ -73,13 +74,28 @@ class ChatScreen extends GetView<ChatController> {
 
 String getOtherUserId(ConversationEntity conversation) {
   final authController = Get.find<AuthController>();
-  print('My ID: ${authController.user.value.id}');
-  print('Sender ID: ${conversation.senderId!}');
-  print('Receiver ID: ${conversation.receiverId!}');
-  if(conversation.receiverId.toString() == authController.user.value.id) {
-    return conversation.senderId!;
+  if(conversation.receiver?.id == authController.user.value.id) {
+      return conversation.sender!.id ?? 'unknown sender';
   } else {
-    return conversation.receiverId!;
+    return conversation.receiver!.id ?? 'unknown sender';
+  }
+}
+
+UserEntity getOtherUser(ConversationEntity conversation) {
+  final authController = Get.find<AuthController>();
+  if(conversation.receiver?.id == authController.user.value.id) {
+    return conversation.sender!;
+  } else {
+    return conversation.receiver!;
+  }
+}
+
+String getOtherUserName(ConversationEntity conversation) {
+  final authController = Get.find<AuthController>();
+  if(conversation.receiver?.id == authController.user.value.id) {
+    return conversation.sender!.userName ?? 'unknown sender';
+  } else {
+    return conversation.receiver!.userName ?? 'unknown sender';
   }
 }
 
@@ -105,10 +121,18 @@ class ChatListItem extends StatelessWidget {
             CircleAvatar(
               radius: 30,
               backgroundColor: AppColors.primary.withOpacity(0.1),
-              // child: user.profilePicture != null
-              //     ? Image.network(user.profilePicture!)
-                  child: Icon(Icons.person, color: AppColors.primary, size: 30),
+              child: getOtherUser(conversation).avatar != null
+                  ? ClipOval(
+                child: Image.network(
+                  getOtherUser(conversation).avatar!,
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                ),
+              )
+                  : Icon(Icons.person, color: AppColors.primary, size: 30),
             ),
+
             const SizedBox(width: 16),
             // Chat info
             Expanded(
@@ -119,7 +143,7 @@ class ChatListItem extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        getOtherUserId(conversation),
+                        getOtherUserName(conversation),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

@@ -10,6 +10,7 @@ class ChatApiService {
         "page": 1,
         "pageSize": 50
       });
+      print('Conversation data: ${response.data['data']}');
       return response.data['data'];
     } catch (e) {
       rethrow;

@@ -12,6 +12,7 @@ import 'package:love_quest/features/chat/data/repository/chat_repository_impl.da
 import 'package:love_quest/features/chat/domain/repository/chat_repository.dart';
 import 'package:love_quest/features/film_choosing/services/filmChoosingService.dart';
 import 'package:love_quest/features/film_choosing/services/filmChoosingServiceIpm.dart';
+import 'package:love_quest/features/schedule/domain/data/schedule_api_service.dart';
 
 import 'core/global/global.controller.dart';
 import 'features/auth/domain/usecases/get_profile.dart';
@@ -27,6 +28,7 @@ Future<void> initializeDependencies() async {
   );
   Get.put<DioClient>(dioClient);
   Get.put<UserApiService>(UserApiServiceImpl(Get.find<DioClient>()));
+  Get.put<ScheduleApiService>(ScheduleApiService(Get.find<DioClient>()));
   Get.put<UserRepository>(UserRepositoryImpl(Get.find<UserApiService>()));
   Get.put<LoginUseCase>(LoginUseCase(Get.find<UserRepository>()));
   Get.put<VerifyOtpUseCase>(VerifyOtpUseCase(Get.find<UserRepository>()));
