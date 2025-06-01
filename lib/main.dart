@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:love_quest/core/config/routes.dart';
 import 'package:love_quest/core/config/theme.dart';
 import 'package:love_quest/core/firebase/firebase_messaging_service.dart';
@@ -13,6 +14,7 @@ void main() async {
   await Firebase.initializeApp();
   await FirebaseMessagingService().init();
   await GetStorage.init();
+  await MobileAds.instance.initialize();
   await initializeDependencies();
 
   runApp(MyApp());
@@ -28,7 +30,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: AppTheme.lightTheme,
       getPages: AppRoutes.routes,
-      initialRoute: AppRoutes.filmChoosing
+      initialRoute: AppRoutes.splash
     );
   }
 }

@@ -25,6 +25,22 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
+  Future<DataState<List<ConversationEntity>>> getConversationsByName(String name, int pageNumber, int pageSize) async {
+    try {
+      List<dynamic> data = await _chatApiService.getConversationsByName(name, pageNumber, pageSize);
+      List<ConversationEntity> conversationList = data.map((json) {
+        return ConversationEntity.fromJson(json);
+      }).toList();
+      for(var conversation in conversationList) {
+        logger.i('Message from ${conversation.sender?.userName} and to ${conversation.receiver?.userName}');
+      }
+      return DataSuccess(conversationList);
+    } catch (e) {
+      return DataFailed(Exception('Error getting conversation: $e'));
+    }
+  }
+
+  @override
   Future<DataState<List<MessageEntity>>> getMessages({required String roomId, required String user2Id}) async {
     try {
       List<dynamic> data = await _chatApiService.getMessages(roomId: roomId, user2Id: user2Id);

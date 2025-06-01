@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:love_quest/core/global/global.controller.dart';
 import 'package:love_quest/core/resources/data_state.dart';
 import 'package:love_quest/core/socket/socket_service.dart';
@@ -19,14 +22,27 @@ class ChatController extends GetxController {
   final GlobalController globalController = Get.find<GlobalController>();
   final AuthController authController = Get.find<AuthController>();
   final ChatRepository chatRepository = Get.find<ChatRepository>();
+
+  RxBool isLoading = false.obs;
+
   String? currentRoomId;
   String? chattingWithUserId;
+
+  Timer? _debounce;
+
+  RxBool hasMore = true.obs;
+  RxBool isFetchingMore = false.obs;
+  RxInt currentPageNumber = 1.obs;
+  final int pageSize = 10;
+
+  final ScrollController scrollController = ScrollController();
 
   @override
   void onInit() {
     super.onInit();
     loadConversations();
     _initializeSocket();
+    scrollController.addListener(_scrollListener);
   }
 
   @override
@@ -34,6 +50,39 @@ class ChatController extends GetxController {
     messageController.dispose();
     _socketService.disconnect();
     super.onClose();
+  }
+
+  void _scrollListener() {
+    print("End, loding more");
+    if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 200 &&
+        hasMore.value &&
+        !isFetchingMore.value) {
+      handleSearch(messageController.text);
+    }
+  }
+
+
+  Future<void> handleSearch(String name) async {
+    isLoading.value = true;
+    isFetchingMore.value = true;
+    final result = await chatRepository.getConversationsByName(name, currentPageNumber.value, pageSize);
+    if(result is DataSuccess) {
+      final newData = result.data ?? [];
+      conversations.value = [...conversations.value, ...newData];
+      if(conversations.value.length < pageSize) {
+        hasMore.value = false;
+        currentPageNumber.value = currentPageNumber.value + 1;
+      }
+    }
+    isLoading.value = false;
+    isFetchingMore.value = false;
+  }
+
+  void debouncedSearch(String name) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () async {
+      await handleSearch(name);
+    });
   }
 
   void _initializeSocket() {

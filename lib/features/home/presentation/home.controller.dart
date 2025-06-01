@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:love_quest/core/ads/ads_service.dart';
 import 'package:love_quest/core/config/routes.dart';
 import 'package:love_quest/core/global/global.controller.dart';
 import 'package:love_quest/features/auth/presentation/controllers/auth_controller.dart';
@@ -13,6 +14,7 @@ class HomeController extends GetxController {
   final PageController _pageController = PageController();
   final AuthController _authController = Get.find<AuthController>();
   final GlobalController _globalController = Get.find<GlobalController>();
+  final AdsService _adsService = Get.find<AdsService>();
   PageController get pageController => _pageController;
   PersistentTabController get persistentTabController =>
       _persistentTabController;
@@ -31,6 +33,16 @@ class HomeController extends GetxController {
     _socketService.sendMessage('register', {'userId': _authController.user.value.id});
     _socketService.sendMessage('online', {"userId": _authController.user.value.id, "gender": _authController.user.value.gender});
     listenMatchingEvent();
+  }
+
+  void handleShowAds() {
+    print("ads test");
+    _adsService.rewardedAds?.show(
+      onUserEarnedReward: (_, reward) {
+        print("Hello");
+        handleFindPartner();
+      },
+    );
   }
 
   void updateCurrentIndex(int val) {

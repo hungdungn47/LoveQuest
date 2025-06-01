@@ -213,7 +213,8 @@ class HomePageView extends StatelessWidget {
                             ),
                             GestureDetector(
                               onTap: () {
-                                controller.handleFindPartner();
+                                // controller.handleFindPartner();
+                                controller.handleShowAds();
                               },
                               child: Container(
                                 padding: EdgeInsets.symmetric(

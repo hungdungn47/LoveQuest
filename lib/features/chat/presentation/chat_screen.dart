@@ -6,6 +6,7 @@ import 'package:love_quest/features/auth/presentation/controllers/auth_controlle
 import 'package:love_quest/features/chat/domain/entities/conversation.dart';
 import 'package:love_quest/features/chat/presentation/chat_controller.dart';
 import 'package:love_quest/features/chat/presentation/chat_conversation_screen.dart';
+import 'package:love_quest/widgets/normal_loading.dart';
 
 class ChatScreen extends GetView<ChatController> {
   const ChatScreen({super.key});
@@ -32,6 +33,7 @@ class ChatScreen extends GetView<ChatController> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
+              controller: controller.messageController,
               decoration: InputDecoration(
                 hintText: 'Search messages...',
                 prefixIcon: Icon(Icons.search, color: AppColors.primary),
@@ -44,27 +46,44 @@ class ChatScreen extends GetView<ChatController> {
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               ),
-              onChanged: (value) => controller.searchUsers(value),
+              onChanged: (value) => controller.debouncedSearch(value),
             ),
           ),
           // Chat list
           Expanded(
-            child: Obx(
-              () => ListView.builder(
-                itemCount: controller.conversations.length,
+            child: Obx(() {
+              final items = controller.conversations;
+
+              if (items.isEmpty) return Center(child: Text('No conversation found.'));
+
+              return ListView.builder(
+                controller: controller.scrollController,
+                itemCount: items.length + (controller.isFetchingMore.value ? 1 : 0),
                 itemBuilder: (context, index) {
-                  final conversation = controller.conversations[index];
+                  if (index == items.length) {
+                    return Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Center(child: NormalLoading()),
+                    );
+                  }
+
+                  final conversation = items[index];
                   return ChatListItem(
                     conversation: conversation,
                     onTap: () {
                       controller.joinChatRoom(conversation.roomId!);
                       final String otherUserName = getOtherUserName(conversation);
-                      Get.to(() => ChatConversationScreen(conversation: conversation, otherUserName: otherUserName, isOnline: true, profilePicture: getOtherUser(conversation).avatar,));
+                      Get.to(() => ChatConversationScreen(
+                        conversation: conversation,
+                        otherUserName: otherUserName,
+                        isOnline: true,
+                        profilePicture: getOtherUser(conversation).avatar,
+                      ));
                     },
                   );
                 },
-              ),
-            ),
+              );
+            }),
           ),
         ],
       ),
@@ -74,8 +93,8 @@ class ChatScreen extends GetView<ChatController> {
 
 String getOtherUserId(ConversationEntity conversation) {
   final authController = Get.find<AuthController>();
-  if(conversation.receiver?.id == authController.user.value.id) {
-      return conversation.sender!.id ?? 'unknown sender';
+  if (conversation.receiver?.id == authController.user.value.id) {
+    return conversation.sender!.id ?? 'unknown sender';
   } else {
     return conversation.receiver!.id ?? 'unknown sender';
   }
@@ -83,7 +102,7 @@ String getOtherUserId(ConversationEntity conversation) {
 
 UserEntity getOtherUser(ConversationEntity conversation) {
   final authController = Get.find<AuthController>();
-  if(conversation.receiver?.id == authController.user.value.id) {
+  if (conversation.receiver?.id == authController.user.value.id) {
     return conversation.sender!;
   } else {
     return conversation.receiver!;
@@ -92,7 +111,7 @@ UserEntity getOtherUser(ConversationEntity conversation) {
 
 String getOtherUserName(ConversationEntity conversation) {
   final authController = Get.find<AuthController>();
-  if(conversation.receiver?.id == authController.user.value.id) {
+  if (conversation.receiver?.id == authController.user.value.id) {
     return conversation.sender!.userName ?? 'unknown sender';
   } else {
     return conversation.receiver!.userName ?? 'unknown sender';
@@ -123,13 +142,13 @@ class ChatListItem extends StatelessWidget {
               backgroundColor: AppColors.primary.withOpacity(0.1),
               child: getOtherUser(conversation).avatar != null
                   ? ClipOval(
-                child: Image.network(
-                  getOtherUser(conversation).avatar!,
-                  width: 60,
-                  height: 60,
-                  fit: BoxFit.cover,
-                ),
-              )
+                      child: Image.network(
+                        getOtherUser(conversation).avatar!,
+                        width: 60,
+                        height: 60,
+                        fit: BoxFit.cover,
+                      ),
+                    )
                   : Icon(Icons.person, color: AppColors.primary, size: 30),
             ),
 

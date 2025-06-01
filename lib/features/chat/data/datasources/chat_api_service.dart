@@ -4,6 +4,23 @@ class ChatApiService {
   final DioClient _client;
   ChatApiService(this._client);
 
+  Future<List<dynamic>> getConversationsByName(String name, int pageNumber, int pageSize) async {
+    try {
+      Map<String, dynamic> queryData = {
+        "pageNumber": pageNumber,
+        "pageSize": pageSize,
+      };
+      if(name.isNotEmpty) {
+        queryData["name"] = name;
+      }
+      final response = await _client.get('/message/getConversationsByName', queryParameters: queryData);
+      print('Conversation data: ${response.data['data']}');
+      return response.data['data'];
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<List<dynamic>> getConversations() async {
     try {
       final response = await _client.get('/message/conversations', queryParameters: {
