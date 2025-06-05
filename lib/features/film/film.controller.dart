@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:love_quest/core/config/events.dart';
+import 'package:love_quest/core/config/routes.dart';
 import 'package:love_quest/core/global/global.controller.dart';
 import 'package:love_quest/core/socket/socket_service.dart';
 import 'package:love_quest/features/auth/domain/entities/user.dart';
@@ -57,8 +58,20 @@ class FilmController extends GetxController {
     _videoController = VideoPlayerController.networkUrl(Uri.parse(
         'https://0f38-117-2-113-7.ngrok-free.app/api/upload/stream/${filmUrl.value}'))
       ..setVolume(1);
-    _videoController.initialize().then((_) {
-      isVideoInitialized.value = true;
+    await _videoController.initialize();
+
+    isVideoInitialized.value = true;
+
+    _videoController.addListener(() {
+      if (_videoController.value.position >= _videoController.value.duration &&
+          !_videoController.value.isPlaying) {
+        print("Video đã phát xong!");
+        if (_authController.user.value.gender == 'MALE') {
+          _socketService.sendMessage(EventName.filmEnd, {
+            "roomId": _globalController.roomId.value,
+          });
+        }
+      }
     });
 
     rotatePortrait();
@@ -66,6 +79,8 @@ class FilmController extends GetxController {
     listenFilmControlResponse();
 
     _handleToggleOpponentMicro();
+
+    listenFilmEndEvent();
 
     noiseAnalyst();
 
@@ -94,6 +109,12 @@ class FilmController extends GetxController {
     _socketService.listenToMessages(EventName.isSpeaking, (data) {
       final bool isSpeak = data["isSpeaking"];
       isUser2Speaking.value = isSpeak;
+    });
+  }
+
+  void listenFilmEndEvent() {
+    _socketService.listenToMessages(EventName.filmEnd, (data) {
+      Get.toNamed(AppRoutes.chat);
     });
   }
 

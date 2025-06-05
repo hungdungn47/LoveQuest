@@ -20,6 +20,7 @@ class EventName {
   static final String filmChoosing = 'filmChoosing';
   static final String turnOnMicro = 'turnOnMicro';
   static final String isSpeaking = 'isSpeaking';
+  static final String filmEnd = 'filmEnd';
   //Virtual room
   static final String online = 'online';
   static final String matching = 'matching';
