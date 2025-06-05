@@ -13,13 +13,13 @@ class FilmChoosingPage extends GetView<FilmChoosingController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBarCustomize(appBarTitle: "Film Choosing"),
       body: Obx(() {
         if (!controller.isLoading.value) {
           return SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppBarCustomize(title: "Movie"),
                 Container(
                   height:
                       300, // Phải set chiều cao để Expanded không lỗi trong Column

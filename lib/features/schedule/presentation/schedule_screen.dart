@@ -79,10 +79,10 @@ class ScheduleScreen extends GetView<ScheduleController> {
           }
 
           return Container(
-            height: 500,
+            height: MediaQuery.of(context).size.height - 100,
             width: 500,
             child: ListView.builder(
-              itemCount: 1,
+              itemCount: controller.schedules.length,
               itemBuilder: (context, index) =>
                   _buildScheduleCard(controller.schedules[index]),
             ),
@@ -130,14 +130,14 @@ class ScheduleScreen extends GetView<ScheduleController> {
                 const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
                 const SizedBox(width: 8),
                 Text(
-                  '${DateFormat('dd/MM/yyyy').format(schedule.scheduleAt!)}',
+                  '${DateFormat('dd/MM/yyyy').format(schedule.scheduleAt ?? DateTime.now())}',
                   style: const TextStyle(fontSize: 14),
                 ),
                 const SizedBox(width: 16),
                 const Icon(Icons.access_time, size: 16, color: Colors.grey),
                 const SizedBox(width: 8),
                 Text(
-                  '${DateFormat('HH:mm').format(schedule.scheduleAt!)}',
+                  '${DateFormat('HH:mm').format(schedule.scheduleAt ?? DateTime.now())}',
                   style: const TextStyle(fontSize: 14),
                 ),
               ],
@@ -185,7 +185,7 @@ class ScheduleScreen extends GetView<ScheduleController> {
         label = 'Cancelled';
         break;
       default:
-        color = Colors.grey;
+        color = Colors.green;
         label = status.toUpperCase();
     }
 
@@ -206,116 +206,4 @@ class ScheduleScreen extends GetView<ScheduleController> {
     );
   }
 
-  // void _showCreateScheduleDialog(BuildContext context) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) => AlertDialog(
-  //       title: const Text('Create Game Schedule'),
-  //       content: SizedBox(
-  //         width: double.maxFinite,
-  //         child: SingleChildScrollView(
-  //           child: Column(
-  //             mainAxisSize: MainAxisSize.min,
-  //             children: [
-  //               TextField(
-  //                 controller: controller.dateController,
-  //                 decoration: const InputDecoration(
-  //                   labelText: 'Date',
-  //                   hintText: 'Select date',
-  //                   prefixIcon: Icon(Icons.calendar_today),
-  //                 ),
-  //                 readOnly: true,
-  //                 onTap: () async {
-  //                   final date = await showDatePicker(
-  //                     context: context,
-  //                     initialDate: DateTime.now(),
-  //                     firstDate: DateTime.now(),
-  //                     lastDate: DateTime.now().add(const Duration(days: 30)),
-  //                   );
-  //                   if (date != null) {
-  //                     controller.dateController.text =
-  //                         '${date.day}/${date.month}/${date.year}';
-  //                   }
-  //                 },
-  //               ),
-  //               const SizedBox(height: 16),
-  //               TextField(
-  //                 controller: controller.timeController,
-  //                 decoration: const InputDecoration(
-  //                   labelText: 'Time',
-  //                   hintText: 'Select time',
-  //                   prefixIcon: Icon(Icons.access_time),
-  //                 ),
-  //                 readOnly: true,
-  //                 onTap: () async {
-  //                   final time = await showTimePicker(
-  //                     context: context,
-  //                     initialTime: TimeOfDay.now(),
-  //                   );
-  //                   if (time != null) {
-  //                     controller.timeController.text =
-  //                         '${time.hour}:${time.minute.toString().padLeft(2, '0')}';
-  //                   }
-  //                 },
-  //               ),
-  //               const SizedBox(height: 16),
-  //               DropdownButtonFormField<String>(
-  //                 value: controller.selectedGameType.value.isEmpty
-  //                     ? null
-  //                     : controller.selectedGameType.value,
-  //                 decoration: const InputDecoration(
-  //                   labelText: 'Game Type',
-  //                   hintText: 'Select game type',
-  //                   prefixIcon: Icon(Icons.games),
-  //                 ),
-  //                 items: const [
-  //                   DropdownMenuItem(
-  //                     value: 'Lightning Quiz',
-  //                     child: Text('Lightning Quiz'),
-  //                   ),
-  //                   DropdownMenuItem(
-  //                     value: 'Word Chain',
-  //                     child: Text('Word Chain'),
-  //                   ),
-  //                   DropdownMenuItem(
-  //                     value: 'Memory Match',
-  //                     child: Text('Memory Match'),
-  //                   ),
-  //                 ],
-  //                 onChanged: (value) {
-  //                   controller.selectedGameType.value = value ?? '';
-  //                 },
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       ),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () => Navigator.pop(context),
-  //           child: const Text('Cancel'),
-  //         ),
-  //         ElevatedButton(
-  //           onPressed: () {
-  //             // Parse date and time from controllers
-  //             final dateParts = controller.dateController.text.split('/');
-  //             final timeParts = controller.timeController.text.split(':');
-  //
-  //             if (dateParts.length == 3 && timeParts.length == 2) {
-  //               final scheduledTime = DateTime(
-  //                 int.parse(dateParts[2]), // year
-  //                 int.parse(dateParts[1]), // month
-  //                 int.parse(dateParts[0]), // day
-  //                 int.parse(timeParts[0]), // hour
-  //                 int.parse(timeParts[1]), // minute
-  //               );
-  //             }
-  //             Navigator.pop(context);
-  //           },
-  //           child: const Text('Create'),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 }

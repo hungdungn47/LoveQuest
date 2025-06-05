@@ -20,30 +20,7 @@ class DrawGameView extends GetView<DrawGameController> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(CupertinoIcons.back, color: Colors.white),
-            onPressed: () => Get.back(),
-          ),
-          title: const Text(
-            'LoveQuest',
-            style: TextStyle(
-              fontSize: 28,
-              fontFamily: 'Kaushan',
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          backgroundColor: AppColors.primary,
-          elevation: 0,
-          actions: [
-            IconButton(
-                onPressed: () {
-                  Get.toNamed(AppRoutes.schedule_offer);
-                },
-                icon: Icon(Icons.schedule, color: Colors.white,))
-          ],
-        ),
+        appBar: AppBarCustomize(appBarTitle: "Draw Game"),
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

@@ -17,10 +17,10 @@ class ProfilePage extends GetView<ProfileController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBarCustomize(appBarTitle: "LoveQuest"),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppBarCustomize(title: "LoveQuest"),
           Expanded(
               child: SingleChildScrollView(
               child: Column(

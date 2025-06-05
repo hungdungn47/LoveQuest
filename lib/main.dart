@@ -14,6 +14,10 @@ void main() async {
   await Firebase.initializeApp();
   await FirebaseMessagingService().init();
   await GetStorage.init();
+  final RequestConfiguration requestConfiguration = RequestConfiguration(
+    testDeviceIds: ['5E9BA96C2AE1FD5E1CE9065088A3407E', 'EMULATOR'], // device ID thật của bạn
+  );
+  MobileAds.instance.updateRequestConfiguration(requestConfiguration);
   await MobileAds.instance.initialize();
   await initializeDependencies();
 

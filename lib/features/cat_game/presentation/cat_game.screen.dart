@@ -10,18 +10,6 @@ import 'cat_game.controller.dart';
 class CatGameScreen extends GetView<CatGameController> {
   const CatGameScreen({super.key});
 
-  void _showWinnerDialog(String winner) {
-    Get.defaultDialog(
-      title: 'Congratulations! 🎉',
-      middleText: '$winner wins the game!',
-      barrierDismissible: false,
-      confirm: TextButton(
-        onPressed: () => Get.offAndToNamed(AppRoutes.quiz_game),
-        child: const Text('Next Game'),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -35,7 +23,7 @@ class CatGameScreen extends GetView<CatGameController> {
           onPressed: () => Get.back(),
         ),
         title: const Text(
-          'LoveQuest',
+          'Cat Game',
           style: TextStyle(
             fontSize: 28,
             fontFamily: 'Kaushan',

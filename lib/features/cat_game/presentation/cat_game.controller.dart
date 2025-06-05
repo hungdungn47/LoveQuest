@@ -144,7 +144,8 @@ class CatGameController extends GetxController
       barrierDismissible: false,
       confirm: TextButton(
         onPressed: () {
-          Get.offAndToNamed(AppRoutes.quiz_game);
+          Get.back();
+          Get.toNamed(AppRoutes.quiz_game);
         },
         child: const Text('Next Game'),
       ),
@@ -217,9 +218,9 @@ class CatGameController extends GetxController
     foodTimer?.cancel();
     // hideTimer?.cancel();
     audioPlayer.dispose();
-    _socketService.sendMessage('fish_hunter_leaveRoom', {
-      'clientId': clientId.value
-    });
+    // _socketService.sendMessage('fish_hunter_leaveRoom', {
+    //   'clientId': clientId.value
+    // });
     // _socketService.disconnect();
     super.onClose();
   }

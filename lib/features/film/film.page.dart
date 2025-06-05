@@ -17,30 +17,7 @@ class FilmPage extends GetView<FilmController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(CupertinoIcons.back, color: Colors.white),
-          onPressed: () => Get.back(),
-        ),
-        title: const Text(
-          'LoveQuest',
-          style: TextStyle(
-            fontSize: 28,
-            fontFamily: 'Kaushan',
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: AppColors.primary,
-        elevation: 0,
-        actions: [
-          IconButton(
-              onPressed: () {
-                Get.toNamed(AppRoutes.schedule_offer);
-              },
-              icon: Icon(Icons.schedule, color: Colors.white,))
-        ],
-      ),
+      appBar: AppBarCustomize(appBarTitle: 'Film'),
       body: Obx(() {
         if (controller.isVideoInitialized.value) {
           return SingleChildScrollView(
@@ -53,7 +30,6 @@ class FilmPage extends GetView<FilmController> {
                   if (controller.isVertical.value) {
                     return Column(
                       children: [
-                        AppBarCustomize(title: 'Film'),
                         SizedBox(height: 60),
                         Center(
                           child: Text(

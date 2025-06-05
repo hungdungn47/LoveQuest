@@ -10,36 +10,15 @@ import 'package:love_quest/features/quiz_game/presentation/widgets/progress_bar.
 import 'package:love_quest/features/quiz_game/presentation/widgets/circular_timer.dart';
 import 'package:love_quest/features/quiz_game/presentation/widgets/completion_modal.dart';
 
+import '../../../widgets/Appbar.dart';
+
 class LightningQuizScreen extends GetView<LightningQuizController> {
   const LightningQuizScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(CupertinoIcons.back, color: Colors.white),
-          onPressed: () => Get.back(),
-        ),
-        title: const Text(
-          'LoveQuest',
-          style: TextStyle(
-            fontSize: 28,
-            fontFamily: 'Kaushan',
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: AppColors.primary,
-        elevation: 0,
-        actions: [
-          IconButton(
-              onPressed: () {
-                Get.toNamed(AppRoutes.schedule_offer);
-              },
-              icon: Icon(Icons.schedule, color: Colors.white,))
-        ],
-      ),
+      appBar: AppBarCustomize(appBarTitle: "Quiz Game"),
       body: Stack(
         children: [
           Container(
@@ -162,7 +141,8 @@ class LightningQuizScreen extends GetView<LightningQuizController> {
                         questions: controller.quizList,
                         answers: controller.answers,
                         onProceed: () {
-                          Get.offNamed(AppRoutes.draw_game);
+                          Get.back();
+                          Get.toNamed(AppRoutes.draw_game);
                         }, opponentAnswers: controller.opponentAnswers,
                       ),
                     ),

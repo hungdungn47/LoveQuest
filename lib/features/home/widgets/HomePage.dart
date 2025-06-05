@@ -17,7 +17,19 @@ class HomePageView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        AppBarCustomize(title: "LoveQuest"),
+        AppBar(
+          title: Text(
+            'LoveQuest',
+            style: TextStyle(
+                fontSize: 28,
+                fontFamily: 'Kaushan',
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+          ),
+          backgroundColor: AppColors.primary,
+          elevation: 0,
+        ),
         SizedBox(
           height: 32,
         ),

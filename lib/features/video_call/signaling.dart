@@ -55,6 +55,10 @@ class Signaling {
         throw Exception('Failed to connect to socket server');
       }
 
+      _localStream = await _createLocalStream();
+      _isInitialized = true;
+
+
       _socketService.listenToMessages('signaling_offer', (data) async {
         print('Received offer from ${data['from']}');
         _isCaller = false;
@@ -63,7 +67,7 @@ class Signaling {
         await _peerConnection.setRemoteDescription(
           RTCSessionDescription(data['sdp'], data['type']),
         );
-
+        await Future.delayed(Duration(milliseconds: 200));
         final answer = await _peerConnection.createAnswer();
         await _peerConnection.setLocalDescription(answer);
 
@@ -84,6 +88,7 @@ class Signaling {
 
       _socketService.listenToMessages('signaling_ice-candidate', (data) async {
         print('Received ICE candidate from ${data['from']}');
+        await _ensurePeerConnectionCreated();
         final candidate = RTCIceCandidate(
           data['candidate'],
           data['sdpMid'],
@@ -92,8 +97,6 @@ class Signaling {
         await _peerConnection.addCandidate(candidate);
       });
 
-      _localStream = await _createLocalStream();
-      _isInitialized = true;
       print('Signaling initialized successfully');
     } catch (e) {
       print('Error initializing signaling: $e');

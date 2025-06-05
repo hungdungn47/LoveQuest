@@ -34,10 +34,12 @@ class ScheduleController extends GetxController {
       isLoading.value = true;
       final ScheduleApiService apiService = Get.find<ScheduleApiService>();
       final res = await apiService.getSchedules();
+      logger.i(res);
       res.map((item) {
         logger.i(item);
       });
       schedules.value = res;
+      logger.i("Schedules length: ${schedules.length}");
 
     } catch (e) {
       error.value = e.toString();

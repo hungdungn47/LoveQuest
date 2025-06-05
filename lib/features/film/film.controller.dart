@@ -55,7 +55,7 @@ class FilmController extends GetxController {
     filmUrl.value = url;
     filmName.value = data["filmName"];
     _videoController = VideoPlayerController.networkUrl(Uri.parse(
-        'https://2315-2001-ee0-4a6e-8b10-3db7-8a28-18b0-ae06.ngrok-free.app/api/upload/stream/${filmName.value}'))
+        'https://0f38-117-2-113-7.ngrok-free.app/api/upload/stream/${filmUrl.value}'))
       ..setVolume(1);
     _videoController.initialize().then((_) {
       isVideoInitialized.value = true;
@@ -106,8 +106,8 @@ class FilmController extends GetxController {
           isUser1Speaking.value = false;
         }
         sendSpeakingSignal(isUser1Speaking.value);
-        print('Noise: ${noiseReading.meanDecibel} dB');
-        print('Max amp: ${noiseReading.maxDecibel} dB');
+        // print('Noise: ${noiseReading.meanDecibel} dB');
+        // print('Max amp: ${noiseReading.maxDecibel} dB');
       },
       onError: (Object error) {
         print(error);

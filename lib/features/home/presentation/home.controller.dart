@@ -39,6 +39,7 @@ class HomeController extends GetxController {
   }
 
   void handleShowAds() {
+    handleInit();
     print("ads test");
     _adsService.rewardedAds?.show(
       onUserEarnedReward: (_, reward) {
@@ -46,6 +47,7 @@ class HomeController extends GetxController {
         handleFindPartner();
       },
     );
+    handleFindPartner();
   }
 
   void updateCurrentIndex(int val) {
@@ -82,8 +84,6 @@ class HomeController extends GetxController {
     _socketService.sendMessage(EventName.matching, {
       "userId": _authController.user.value.id,
       "gender": _authController.user.value.gender,
-      // "userId": "456",
-      // "gender": "MALE",
     });
   }
 
@@ -92,11 +92,21 @@ class HomeController extends GetxController {
     _socketService.listenToMessages(EventName.matching, (data) {
       print("Hello");
       print(data["roomId"]);
+      print(data["users"]);
       String roomId = data["roomId"];
+      String myId = _authController.user.value.id!;
+      String peerId = '';
+      if(data["users"][0] == myId) {
+        peerId = data["users"][1];
+      } else {
+        peerId = data["users"][0];
+      }
+      print('PeerId: $peerId');
       isLoading.value = false;
       _globalController.roomId.value = roomId;
+      _globalController.peerId.value = peerId;
       print('Global controller room id: ${_globalController.roomId.value}');
-      Get.toNamed(AppRoutes.cat_game);
+      Get.toNamed(AppRoutes.filmChoosing);
       // _joinRoom(roomId);
     });
   }
