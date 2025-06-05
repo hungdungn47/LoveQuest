@@ -155,30 +155,26 @@ class CompletionModal extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: 4,
-                itemBuilder: (context, index) {
-                  final quiz = questions[index];
-                  final gameId = controller.quizList.length > index
-                      ? controller.quizList[index].id ?? 'q$index'
-                      : 'q$index';
-          
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Q${index + 1}: ${quiz.question}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 6),
-                      Text("You: ${answers[index]}"),
-                      Text("Opponent: ${opponentAnswers[gameId] ?? 'No answer'}"),
-                      const SizedBox(height: 16),
-                    ],
-                  );
-                },
-              ),
+              ...List.generate(controller.quizList.length - 1, (index) {
+                final quiz = questions[index];
+                final gameId = controller.quizList.length > index
+                    ? controller.quizList[index].id ?? 'q$index'
+                    : 'q$index';
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Q${index + 1}: ${quiz.question}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 6),
+                    Text("You: ${answers[index]}"),
+                    Text("Opponent: ${opponentAnswers[gameId] ?? 'No answer'}"),
+                    const SizedBox(height: 16),
+                  ],
+                );
+              }),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: onProceed,
@@ -186,7 +182,8 @@ class CompletionModal extends StatelessWidget {
               ),
             ],
           ),
-        ),
+        )
+        ,
       ),
     );
   }

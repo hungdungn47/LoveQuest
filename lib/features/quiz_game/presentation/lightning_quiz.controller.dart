@@ -29,7 +29,7 @@ class LightningQuizController extends GetxController {
   //     : quizList[currentQuizIndex.value];
   QuizEntity get getCurrentQuiz => currentQuiz.value;
 
-  double get progress => currentQuizIndex / 5;
+  double get progress => currentQuizIndex / 10;
   double get remainingTimeInSeconds => remainingTime.value / 100;
 
   final GlobalController globalController = Get.find<GlobalController>();
@@ -47,15 +47,15 @@ class LightningQuizController extends GetxController {
         'qa_ready', {'roomId': globalController.roomId.value, 'userId': _authController.user.value.id});
 
     _socketService.listenToMessages('qa_questionSender', (data) {
-      if(currentQuizIndex.value >= 1) {
-        submitAnswer();
+      if (gameId.value.isNotEmpty) {
+        submitAnswer(); // Always submit previous
       }
       startTimer();
       logger.i('Received question $data');
       QuizEntity newQuiz = QuizEntity(
-        question: data['question'],
-        option1: data['optionA'],
-        option2: data['optionB']
+          question: data['question'],
+          option1: data['optionA'],
+          option2: data['optionB']
       );
       quizList.add(newQuiz);
       gameId.value = data['gameId'];
@@ -137,7 +137,7 @@ class LightningQuizController extends GetxController {
       answers.add("");
     }
     // currentQuizIndex++;
-    if (currentQuizIndex.value < 5) {
+    if (currentQuizIndex.value <= 10) {
       // startTimer();
     } else {
       _timer?.cancel();

@@ -25,7 +25,7 @@ class AppBarCustomize extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       leading: IconButton(
         icon: const Icon(CupertinoIcons.back, color: Colors.white),
-        onPressed: () => Get.offAllNamed(AppRoutes.home),
+        onPressed: () => Get.offNamedUntil(AppRoutes.home, (route) => route.settings.name == AppRoutes.home),
       ),
       title: Text(
         appBarTitle,

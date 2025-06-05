@@ -39,7 +39,9 @@ class HomeController extends GetxController {
   }
 
   void handleShowAds() {
-    handleInit();
+    if(!_socketService.isConnected) {
+      _socketService.connect();
+    }
     print("ads test");
     _adsService.rewardedAds?.show(
       onUserEarnedReward: (_, reward) {
@@ -47,7 +49,6 @@ class HomeController extends GetxController {
         handleFindPartner();
       },
     );
-    handleFindPartner();
   }
 
   void updateCurrentIndex(int val) {
@@ -106,7 +107,7 @@ class HomeController extends GetxController {
       _globalController.roomId.value = roomId;
       _globalController.peerId.value = peerId;
       print('Global controller room id: ${_globalController.roomId.value}');
-      Get.toNamed(AppRoutes.filmChoosing);
+      Get.toNamed(AppRoutes.cat_game);
       // _joinRoom(roomId);
     });
   }

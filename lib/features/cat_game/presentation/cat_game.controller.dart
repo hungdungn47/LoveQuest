@@ -25,6 +25,7 @@ class CatGameController extends GetxController
   final RxString gameId = ''.obs;
   final RxString clientId = ''.obs;
   final RxString role = ''.obs;
+  late String winner;
 
   final AudioPlayer audioPlayer = AudioPlayer();
   final GlobalController globalController = Get.find<GlobalController>();
@@ -51,7 +52,6 @@ class CatGameController extends GetxController
     _socketService.listenToMessages('fish_hunter_assigned', (data) {
       if(clientId.value == '') {
         clientId.value = data['clientId'];
-
       }
       if(clientId.value == data['clientId']) {
         role.value = data['role'];
@@ -118,14 +118,15 @@ class CatGameController extends GetxController
     });
 
     _socketService.listenToMessages('fish_hunter_gameOver', (data) {
+      logger.i('Black point: ${blackPoints.value}');
+      logger.i('Orange point: ${orangePoints.value}');
+      showWinningDialog(winner);
       orangePoints.value = 0;
       blackPoints.value = 0;
-      showWinningDialog(blackPoints.value > orangePoints.value ? 'Black cat' : 'Orange cat');
     });
   }
 
   void onWin() {
-    String winner;
     if (blackPoints.value > orangePoints.value) {
       winner = 'Black cat';
     } else {
