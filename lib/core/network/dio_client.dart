@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:love_quest/core/storage/local_storage.dart';
+import 'package:logger/logger.dart';
 
 class DioClient {
   // Private constructor
@@ -8,6 +10,9 @@ class DioClient {
   static final DioClient _instance = DioClient._internal();
   // Getter for the instance
   static DioClient get instance => _instance;
+
+  final LocalStorage _localStorage = LocalStorage();
+  final Logger logger = Logger();
   late Dio _dio;
   // Configuration function
   void configureDio({
@@ -35,6 +40,11 @@ class DioClient {
       InterceptorsWrapper(
         onRequest: onRequest ??
             (options, handler) {
+              final accessToken = LocalStorage().readData('accessToken');
+              logger.i('Getting access token befor request: ${accessToken}');
+              if (accessToken != null) {
+                options.headers['Authorization'] = 'Bearer $accessToken';
+              }
               debugPrint('Request: ${options.method} ${options.path}');
               debugPrint('Headers: ${options.headers}');
               debugPrint('Query Params: ${options.queryParameters}');
@@ -55,10 +65,13 @@ class DioClient {
   }
 
   Future<Response> get(String endpoint,
-      {Map<String, dynamic>? queryParameters}) async {
+      {Map<String, dynamic>? queryParameters, Map<String, dynamic>? headers}) async {
     Response response = await _dio.get(
       endpoint,
       queryParameters: queryParameters,
+      options: Options(
+        headers: headers
+      )
     );
     return response;
   }
@@ -79,6 +92,17 @@ class DioClient {
       Map<String, dynamic>? queryParameters,
       String contentType = 'application/json'}) async {
     Response response = await _dio.put(endpoint,
+        data: data,
+        queryParameters: queryParameters,
+        options: Options(contentType: contentType));
+    return response;
+  }
+
+  Future<Response> patch(String endpoint,
+      {Map<String, dynamic>? data,
+        Map<String, dynamic>? queryParameters,
+        String contentType = 'application/json'}) async {
+    Response response = await _dio.patch(endpoint,
         data: data,
         queryParameters: queryParameters,
         options: Options(contentType: contentType));

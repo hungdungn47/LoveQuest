@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "725395139070",
+    "project_id": "innate-star-411414",
+    "storage_bucket": "innate-star-411414.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:725395139070:android:32aac39a20963b526438af",
+        "android_client_info": {
+          "package_name": "com.example.learn_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEqaRaF8yHBNPLt182z5kDKyKuJP8pMsE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:725395139070:android:45e50185822661c26438af",
+        "android_client_info": {
+          "package_name": "com.example.love_quest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEqaRaF8yHBNPLt182z5kDKyKuJP8pMsE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

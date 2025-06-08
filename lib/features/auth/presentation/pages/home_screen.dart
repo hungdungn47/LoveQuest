@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:love_quest/core/config/theme.dart';
+import 'package:love_quest/features/auth/presentation/widgets/custom_button.dart';
 import '../controllers/auth_controller.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -15,13 +16,13 @@ class HomeScreen extends StatelessWidget {
         title: Text(
           'LoveQuest',
           style: TextStyle(
-            fontSize: 24,
+            fontSize: 28,
             fontFamily: 'Kaushan',
             fontWeight: FontWeight.bold,
-            color: AppColors.primary,
+            color: Colors.white,
           ),
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.primary,
         elevation: 0,
       ),
       body: Center(
@@ -58,6 +59,7 @@ class HomeScreen extends StatelessWidget {
               //   'Interests: ${authController.user.value.interests?.join(", ") ?? "None selected"}',
               //   style: TextStyle(fontSize: 18),
               // )),
+              CustomButton(text: 'Find partner', onPressed: () => {})
             ],
           ),
         ),
